@@ -20,8 +20,12 @@ Use the recommended IDEs and tools for this project and make sure they are up to
     - Save the token, GitHub will not show it again
 4. Clone the repository by running `git clone https://github.com/UltimateGG/iptracker.git` in your terminal
     - If prompted for authentication, use your username and for password **use the personal token made above**, NOT your GitHub password
-5. Open the `Backend/` folder in IntelliJ IDEA (The project uses Java 17, IntelliJ will ask you to download it if you don't have it already, make sure you accept)
+5. Open the `Backend/` folder in IntelliJ IDEA
+    - Setup the SDK: File > Project Structure > Project tab
+    - SDK Dropdown > Add SDK > Download JDK > Set version to 17, Download
+    - Click apply, wait for the SDK to fully install and index before launching
 6. At the top right, make sure the `Main` profile is selected and click the green play button to run the backend
+    - Make sure if prompted you Enable annotation processing
 7. Open the `Frontend/` folder in VS Code
 8. Open a new terminal in VS Code and run `npm install` to install all the dependencies
 9. Run `npm run dev` to start the frontend development server
