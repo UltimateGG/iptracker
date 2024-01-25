@@ -14,7 +14,12 @@ Use the recommended IDEs and tools for this project and make sure they are up to
 1. Install **IntelliJ IDEA** (Ultimate Edition Preferrably) and **VS Code** from the links above if you don't have them already
 2. Install or **update** [NodeJS](https://nodejs.org/en/) (**LTS Version**)
 3. Install [Git](https://git-scm.com/downloads)
+    - You may need to create a personal access token to authenticate with GitHub
+    - In GitHub Settings > Developer Settings > Personal Access Tokens > Tokens (classic) > Generate New Token (Top right) > Classic
+    - Enter a name and expiration date, for permissions you only need to select all under "repo"
+    - Save the token, GitHub will not show it again
 4. Clone the repository by running `git clone https://github.com/UltimateGG/iptracker.git` in your terminal
+    - If prompted for authentication, use your username and for password **use the personal token made above**, NOT your GitHub password
 5. Open the `Backend/` folder in IntelliJ IDEA (The project uses Java 17, IntelliJ will ask you to download it if you don't have it already, make sure you accept)
 6. At the top right, make sure the `Main` profile is selected and click the green play button to run the backend
 7. Open the `Frontend/` folder in VS Code
