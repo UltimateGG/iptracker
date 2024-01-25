@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ip-tracker
+
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+      path: /h2-console
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:~/iptracker
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    open-in-view: false
+
+logging.pattern.console: "[%d{hh:mm:ss a}] %clr(%5p) [%logger{36}] %msg%n"
