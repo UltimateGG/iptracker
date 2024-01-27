@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ucm</groupId>
-    <artifactId>iptracker</artifactId>
+    <artifactId>ip-tracker-backend</artifactId>
     <version>0.0.1</version>
     <name>IPTracker Server</name>
     <description>IP Tracker Backend</description>
