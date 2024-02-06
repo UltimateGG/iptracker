@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import SmellButton from './smell.tsx';
 
 
 const App = () => {
@@ -14,17 +15,7 @@ const App = () => {
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
-        {count >= 1000 ?
-          (
-            <p>
-              trent smells like beef and cheese
-            </p>
-          ) : (
-            <p>
-              trent smells like flowers and unicorns
-            </p>
-          )
-        }
+        <SmellButton count={count}></SmellButton>
       </div>
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
