@@ -1,4 +1,8 @@
-const SmellButton = ({ count }: { count: number }) => {
+interface ExampleComponentProps {
+  count: number;
+}
+
+const ExampleComponent = ({ count }: ExampleComponentProps) => {
   return (
     <>
       {count >= 1000 ?
@@ -16,4 +20,4 @@ const SmellButton = ({ count }: { count: number }) => {
   );
 };
 
-export default SmellButton;
+export default ExampleComponent;

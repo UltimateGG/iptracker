@@ -1,9 +1,17 @@
 import { useState } from 'react';
-import SmellButton from './smell';
+import ExampleComponent from '../ExampleComponent';
+import { getUser } from '../api';
+import { APIError } from '../types';
 
 
-const App = () => {
+const HomePage = () => {
   const [count, setCount] = useState(0);
+
+
+  const testBtn = async () => {
+    const res = await getUser(1).catch((err: APIError) => err.message);
+    console.log(res);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center h-full">
@@ -13,13 +21,15 @@ const App = () => {
         count is {count}
       </button>
 
-      <SmellButton count={count} />
+      <ExampleComponent count={count} />
 
       <p>
         Edit <code>src/App.tsx</code> and save to test HMR
       </p>
+
+      <button onClick={testBtn}>Test</button>
     </div>
   );
 };
 
-export default App;
+export default HomePage;

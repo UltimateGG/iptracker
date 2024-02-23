@@ -16,14 +16,12 @@ import lombok.ToString;
 public class ServerInfo extends Auditable<String> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name = "server_info_uid", updatable = false)
+	@Column(name = "server_info_uid")
 	@Setter(AccessLevel.NONE)
 	private int id;
 
-	@ManyToOne
 	@JoinColumn(name = "app_info_uid")
-	@Setter(AccessLevel.NONE)
-	private ApplicationInfo appInfoId;
+	private int appInfoId;
 
 	@Column(name = "source_hostname")
 	private String sourceHostname;
@@ -41,5 +39,5 @@ public class ServerInfo extends Auditable<String> {
 	private int destinationPort;
 
 	@Column(name = "ip_status")
-	private String ipStatus; // TODO: Enum,bool?
+	private boolean isEnabled = true;
 }

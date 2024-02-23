@@ -1,6 +1,9 @@
 server:
   port: 8080
 
+  servlet:
+    context-path: /api
+
 spring:
   application:
     name: ip-tracker
@@ -20,7 +23,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     open-in-view: false
 
 logging.pattern.console: "[%d{hh:mm:ss a}] %clr(%5p) [%logger{36}] %msg%n"
