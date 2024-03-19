@@ -2,6 +2,7 @@ import { useState } from 'react';
 import ExampleComponent from '../ExampleComponent';
 import { getUser } from '../api';
 import { APIError } from '../types';
+import { Button } from 'flowbite-react';
 
 
 const HomePage = () => {
@@ -27,7 +28,7 @@ const HomePage = () => {
         Edit <code>src/App.tsx</code> and save to test HMR
       </p>
 
-      <button onClick={testBtn}>Test</button>
+      <Button onClick={testBtn} color="blue">Test</Button>
     </div>
   );
 };
