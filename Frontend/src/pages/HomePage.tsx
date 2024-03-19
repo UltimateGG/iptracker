@@ -1,4 +1,4 @@
-import ChangePage from '../ChangePage';
+import ChangePage from '../components/ChangePage';
 
 
 const HomePage = () => {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import ExampleComponent from '../ExampleComponent';
-import ChangePage from '../ChangePage';
+import ExampleComponent from '../components/ExampleComponent';
+import ChangePage from '../components/ChangePage';
 import { getUser } from '../api';
 import { APIError } from '../types';
 
