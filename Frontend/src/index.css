@@ -19,7 +19,7 @@ html, body, #root {
 }
 
 html, body, h1, h2, h3, h4, h5, h6, p, button, input {
-  font-weight: 400; /* Regular */
+  font-weight: 400;
 }
 
 h1 { @apply text-5xl; }
@@ -37,13 +37,4 @@ p, body { @apply text-base; }
 small {
   @apply text-sm;
   color: #94a2b4;
-}
-
-button {
-  @apply text-base;
-  cursor: pointer;
-  background-color: #c3c3c3;
-  border-radius: 0.25rem;
-  padding: 0.5rem 1rem;
-  border: none;
 }

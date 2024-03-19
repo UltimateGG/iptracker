@@ -27,7 +27,7 @@ const LoginPage = () => {
         Edit <code>src/App.tsx</code> and save to test HMR
       </p>
 
-      <button onClick={testBtn}>Test</button>
+      <button onClick={testBtn} color="blue">Test</button>
     </div>
   );
 };
