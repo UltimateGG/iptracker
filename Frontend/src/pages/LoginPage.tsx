@@ -1,37 +1,22 @@
-import { useState } from 'react';
-import ExampleComponent from '../components/ExampleComponent';
-import ChangePage from '../components/ChangePage';
-import { getUser } from '../api';
-import { APIError } from '../types';
+import LoginHeader from '../components/LoginHeader';
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
 
 
 const LoginPage = () => {
-  const [count, setCount] = useState(0);
-
-
-  const testBtn = async () => {
-    const res = await getUser(1).catch((err: APIError) => err.message);
-    console.log(res);
-  };
-
   return (
-    <div className="flex flex-col items-center justify-center h-full">
-      <h1>IP Whitelist Tracker</h1>
-
-      <button onClick={() => setCount((count) => count + 1)}>
-        count is {count}
-      </button>
-
-      <ExampleComponent count={count} />
-
-      <p>
-        Edit <code>src/App.tsx</code> and save to test HMR
-      </p>
-
-      <button onClick={testBtn} color="blue">Test</button>
-
-      <ChangePage url={'home'} />
-    </div>
+    <>
+      <LoginHeader />
+      <Container fluid className="d-flex align-items-center justify-content-center h-100 w-full">
+        <Container className="d-flex align-items-center justify-content-center w-50 min-w-96/3 h-50 min-h-96" style={{backgroundColor: 'grey'}}>
+          <Row className="text-center">
+            <Button href="/home">Login</Button>
+            <Button href="/login">Login</Button>
+          </Row>
+        </Container>
+      </Container>
+    </>
   );
 };
 
