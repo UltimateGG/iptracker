@@ -2,5 +2,8 @@
   "files.associations": {
     "*.css": "tailwindcss"
   },
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "git.autofetch": "all",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
