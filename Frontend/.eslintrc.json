@@ -8,22 +8,13 @@
     "browser": true,
     "es2021": true
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
-    "plugin:import/recommended",
-    "plugin:import/typescript",
-    "plugin:react/jsx-runtime"
-  ],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:react/recommended", "plugin:import/recommended", "plugin:import/typescript", "plugin:react/jsx-runtime"],
   "overrides": [
     {
       "env": {
         "node": true
       },
-      "files": [
-        ".eslintrc.{js,cjs}"
-      ],
+      "files": [".eslintrc.{js,cjs}"],
       "parserOptions": {
         "sourceType": "script"
       }
@@ -34,37 +25,19 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": [
-    "@typescript-eslint",
-    "react"
-  ],
-  "ignorePatterns": [
-    "node_modules/",
-    "dist/"
-  ],
+  "plugins": ["@typescript-eslint", "react"],
+  "ignorePatterns": ["node_modules/", "dist/"],
   "rules": {
     "indent": ["error", 2, { "SwitchCase": 1 }],
-    "quotes": [
-      "error",
-      "single"
-    ],
-    "jsx-quotes": [
-      "error",
-      "prefer-double"
-    ],
-    "semi": [
-      "error",
-      "always"
-    ],
+    "quotes": ["error", "single"],
+    "jsx-quotes": ["error", "prefer-double"],
+    "semi": ["error", "always"],
     "import/newline-after-import": [
       "error",
       {
-        "count": 2
+        "count": 1
       }
     ],
-    "eol-last": [
-      "error",
-      "always"
-    ]
+    "eol-last": ["error", "always"]
   }
 }

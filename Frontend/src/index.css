@@ -3,7 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* CSS Reset */
 * {
   box-sizing: border-box;
@@ -14,25 +13,50 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
-html, body, h1, h2, h3, h4, h5, h6, p, button, input {
+html,
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+button,
+input {
   font-weight: 400;
 }
 
-h1 { @apply text-5xl; }
+h1 {
+  @apply text-5xl;
+}
 
-h2 { @apply text-4xl; }
+h2 {
+  @apply text-4xl;
+}
 
-h3 { @apply text-3xl; }
+h3 {
+  @apply text-3xl;
+}
 
-h4 { @apply text-2xl; }
+h4 {
+  @apply text-2xl;
+}
 
-h5 { @apply text-xl; }
+h5 {
+  @apply text-xl;
+}
 
-p, body { @apply text-base; }
+p,
+body {
+  @apply text-base;
+}
 
 small {
   @apply text-sm;
