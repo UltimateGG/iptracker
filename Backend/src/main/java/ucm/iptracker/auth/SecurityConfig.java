@@ -1,4 +1,4 @@
-package ucm.iptracker;
+package ucm.iptracker.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,13 +13,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import ucm.iptracker.auth.JwtAuthFilter;
 import ucm.iptracker.service.UserService;
 
 
@@ -40,11 +38,13 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf(AbstractHttpConfigurer::disable)
 				.cors(Customizer.withDefaults())
+				.headers(headers -> headers.frameOptions().sameOrigin())
 				.authorizeHttpRequests(request -> {
 					request.requestMatchers("/auth/login").permitAll() // allow unauthenticated access to login endpoint
+							.requestMatchers("/h2-console/**").permitAll() // allow unauthenticated access to h2 console
 							.anyRequest().authenticated(); // require authentication for all other requests
 				})
-				.exceptionHandling(exception -> exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+				.exceptionHandling(exception -> exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))) // return 401 for unauthenticated requests
 				.sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authenticationProvider(authenticationProvider()).addFilterBefore(
 						jwtAuthFilter, UsernamePasswordAuthenticationFilter.class

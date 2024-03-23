@@ -1,19 +1,22 @@
-package ucm.iptracker;
+package ucm.iptracker.auth;
 
-import io.jsonwebtoken.*;
-import jakarta.servlet.http.HttpServletRequest;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import ucm.iptracker.model.User;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 
 @Component
 public class JwtUtil {
 	private final String SECRET_KEY = System.getenv("SECRET_KEY");
-	private final long ACCESS_TOKEN_EXPIRATION_HOURS = 1; // 1 day token expiration
-	private final String TOKEN_PREFIX = "Bearer ";
+	private final int ACCESS_TOKEN_EXPIRATION_HOURS = 1; // 1 day token expiration
 
 	private final JwtParser jwtParser;
 
@@ -22,49 +25,30 @@ public class JwtUtil {
 		this.jwtParser = Jwts.parser().setSigningKey(SECRET_KEY);
 	}
 
-	public String createToken(User user) {
-		Claims claims = Jwts.claims();
-		claims.put("id",user.getId());
-		claims.put("username",user.getUsername());
-
-		Date tokenValidity = new Date(new Date().getTime() + TimeUnit.DAYS.toMillis(ACCESS_TOKEN_EXPIRATION_HOURS));
-
+	public String generateToken(User user) {
 		return Jwts.builder()
-				.setClaims(claims)
-				.setExpiration(tokenValidity)
+				.setSubject(user.getUsername())
+				.claim("id", user.getId())
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(ACCESS_TOKEN_EXPIRATION_HOURS)))
 				.signWith(SignatureAlgorithm.HS256, SECRET_KEY)
 				.compact();
 	}
 
-	private Claims parseJwtClaims(String token) {
-		return jwtParser.parseClaimsJws(token).getBody();
+	private <T> T extractClaims(String token, Function<Claims, T> claimsTFunction){
+		return claimsTFunction.apply(jwtParser.parseClaimsJws(token).getBody());
 	}
 
-	public Claims resolveClaims(HttpServletRequest req) {
-		try {
-			String token = resolveToken(req);
-
-			if (token != null) return parseJwtClaims(token);
-			return null;
-		} catch (ExpiredJwtException ex) {
-			req.setAttribute("expired", ex.getMessage());
-			throw ex;
-		} catch (Exception ex) {
-			req.setAttribute("invalid", ex.getMessage());
-			throw ex;
-		}
+	public boolean isTokenValid(String token, UserDetails userDetails){
+		String username = extractUsername(token);
+		return (username.equals(userDetails.getUsername()) && !isExpired(token));
 	}
 
-	public String resolveToken(HttpServletRequest request) {
-		String bearerToken = request.getHeader("Authorization");
-
-		if (bearerToken != null && bearerToken.startsWith(TOKEN_PREFIX))
-			return bearerToken.substring(TOKEN_PREFIX.length());
-
-		return null;
+	public String extractUsername(String token){
+		return extractClaims(token, Claims::getSubject);
 	}
 
-	public boolean isExpired(Claims claims) {
-		return claims.getExpiration().after(new Date());
+	public boolean isExpired(String token) {
+		return extractClaims(token, Claims::getExpiration).before(new Date());
 	}
 }

@@ -7,5 +7,5 @@ import ucm.iptracker.model.User;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Integer> {
-
+	User findByUsername(String username);
 }

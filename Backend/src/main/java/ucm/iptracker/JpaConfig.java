@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.security.core.context.SecurityContextHolder;
+import ucm.iptracker.model.User;
 
 import java.util.Optional;
 
@@ -20,9 +22,7 @@ public class JpaConfig {
 	public static class AuditorAwareImpl implements AuditorAware<String> {
 		@Override
 		public Optional<String> getCurrentAuditor() {
-			return Optional.of("TestUsr");
-			// Can use Spring Security to return currently logged in user
-			// return ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()
+			return Optional.ofNullable(((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
 		}
 	}
 }

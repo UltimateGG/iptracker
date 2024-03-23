@@ -3,6 +3,9 @@ package ucm.iptracker.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ucm.iptracker.model.ApplicationInfo;
 import ucm.iptracker.model.User;
@@ -13,7 +16,7 @@ import ucm.iptracker.repository.UserRepo;
 
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 	private final UserAppsRepo userAppsRepo;
 	private final UserRepo userRepo;
 	private final ApplicationInfoRepo appInfoRepo;
@@ -39,5 +42,13 @@ public class UserService {
 
 		UserApps userApps = new UserApps(user, applicationInfo);
 		userAppsRepo.save(userApps);
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		User user = userRepo.findByUsername(username);
+
+		if (user == null) throw new UsernameNotFoundException("User not found");
+		return user;
 	}
 }
