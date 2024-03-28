@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="seed.sql" type="DatabaseScript" editBeforeRun="true" nameIsGenerated="true">
+    <script-file value="$PROJECT_DIR$/seed.sql" />
+    <script-mode>FILE</script-mode>
+    <data-source id="be0143cf-2374-44b6-8516-b7c1c24c4af2" namespace="database/&quot;IPTRACKER&quot;" />
+    <method v="2" />
+  </configuration>
+</component>
