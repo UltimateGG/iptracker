@@ -26,7 +26,7 @@
     "sourceType": "module"
   },
   "plugins": ["@typescript-eslint", "react"],
-  "ignorePatterns": ["node_modules/", "dist/"],
+  "ignorePatterns": ["node_modules/", "dist/", "tailwind.config.js"],
   "rules": {
     "indent": ["error", 2, { "SwitchCase": 1 }],
     "quotes": ["error", "single"],
@@ -36,6 +36,12 @@
       "error",
       {
         "count": 1
+      }
+    ],
+    "import/no-unresolved": [
+      "error",
+      {
+        "ignore": ["flowbite-react-icons/.+"]
       }
     ],
     "eol-last": ["error", "always"]

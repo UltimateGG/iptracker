@@ -1,19 +1,26 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}', 'node_modules/flowbite-react/lib/esm/**/*.js'],
   theme: {
-    fontSize: {
-      /* Typography Scale */
-      /* Generated using minor third - 1.200 */
-      sm: ['0.833rem', { lineHeight: '1rem', fontWeight: '300' }],
-      base: ['1rem', { lineHeight: '1.5rem', fontWeight: '400' }],
-      xl: ['1.44rem', { lineHeight: '1.8rem', fontWeight: '500' }],
-      '2xl': ['1.728rem', { lineHeight: '2.16rem', fontWeight: '500' }],
-      '3xl': ['2.074rem', { lineHeight: '2.59rem', fontWeight: '500' }],
-      '4xl': ['2.488rem', { lineHeight: '3.11rem', fontWeight: '500' }],
-      '5xl': ['2.986rem', { lineHeight: '3.73rem', fontWeight: '600' }]
-    },
-    extend: {}
+    extend: {
+      colors: {
+        // Flowbite uses cyan color for primary - bug rn
+        cyan: {
+          50: '#D1FFF0',
+          100: '#8AFFDA',
+          200: '#00F0A4',
+          300: '#00CC8B',
+          400: '#00A370',
+          500: '#006747',
+          DEFAULT: '#006747', // Commerce theme color
+          600: '#005C3F',
+          700: '#005238',
+          800: '#00422D',
+          900: '#002E1F',
+          950: '#001F15'
+        }
+      }
+    }
   },
-  plugins: [import('flowbite/plugin')]
+  plugins: [require('flowbite/plugin'), require('flowbite-typography')]
 };

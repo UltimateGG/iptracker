@@ -1,4 +1,4 @@
-import MainHeader from '../components/MainHeader';
+import NavBar from '../components/NavBar';
 import { useAuth } from '../contexts/AuthContext';
 import { UserRole } from '../utils/types';
 
@@ -6,24 +6,26 @@ const HomePage = () => {
   const { user } = useAuth();
 
   return (
-    <div>
-      <MainHeader />
+    <div className="w-full h-full">
+      <NavBar />
 
-      <div className="flex flex-col items-center justify-center h-full">
+      <div className="format m-4">
         <h1>IP Whitelist Tracker Home</h1>
+
+        {user && (
+          <div>
+            <h2>Welcome back, {user.username}!</h2>
+            <p>Your role is: {UserRole[user.role]}</p>
+
+            <p>Your Applications</p>
+            <ul>
+              {user.apps.map(a => (
+                <li key={a.id}>{a.description}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
-
-      {user && (
-        <div>
-          <h2>Welcome back, {user.username}!</h2>
-          <p>Your role is: {UserRole[user.role]}</p>
-
-          <p>Your Applications</p>
-          {user.apps.map(a => (
-            <div key={a.id}>{a.description}</div>
-          ))}
-        </div>
-      )}
     </div>
   );
 };
