@@ -14,7 +14,10 @@ const USER_CACHE_KEY = 'cbuser';
 // While we are logging in show a dummy saved user
 const getCachedUser = () => {
   try {
-    return JSON.parse(localStorage.getItem(USER_CACHE_KEY) || '{}') as User;
+    const user = localStorage.getItem(USER_CACHE_KEY);
+    if (!user) return null;
+
+    return JSON.parse(user) as User;
   } catch (e) {
     return null;
   }
