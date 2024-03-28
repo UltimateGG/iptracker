@@ -1,13 +1,9 @@
-import { useQuery } from 'react-query';
 import MainHeader from '../components/MainHeader';
-import { getUser } from '../utils/api';
-import { APIError, User } from '../utils/types';
+import { useAuth } from '../contexts/AuthContext';
+import { UserRole } from '../utils/types';
 
 const HomePage = () => {
-  const { isLoading, error, data } = useQuery<User, APIError>({
-    queryKey: 'user2',
-    queryFn: () => getUser(1)
-  });
+  const { user } = useAuth();
 
   return (
     <div>
@@ -17,12 +13,15 @@ const HomePage = () => {
         <h1>IP Whitelist Tracker Home</h1>
       </div>
 
-      {isLoading && <p>Loading...</p>}
-      {error && <p>Error: {error.message}</p>}
-      {data && (
+      {user && (
         <div>
-          <h2>Welcome back, {data.username}!</h2>
-          <p>Your role is: {data.role}</p>
+          <h2>Welcome back, {user.username}!</h2>
+          <p>Your role is: {UserRole[user.role]}</p>
+
+          <p>Your Applications</p>
+          {user.apps.map(a => (
+            <div key={a.id}>{a.description}</div>
+          ))}
         </div>
       )}
     </div>

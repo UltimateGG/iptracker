@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { User } from '../utils/types';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { clearToken, getToken, getUser, setUnauthorizedHook, parseToken } from '../utils/api';
@@ -65,7 +65,9 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
     nav('/login');
   };
 
-  return <AuthContext.Provider value={{ user, logout }}>{children}</AuthContext.Provider>;
+  const context: AuthContextProps = useMemo(() => ({ user, logout }), [user]);
+
+  return <AuthContext.Provider value={context}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
