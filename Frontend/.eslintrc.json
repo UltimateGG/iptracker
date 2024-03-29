@@ -41,7 +41,7 @@
     "import/no-unresolved": [
       "error",
       {
-        "ignore": ["flowbite-react-icons/.+"]
+        "ignore": ["flowbite-react-icons/.+", "react-contexify/.+"]
       }
     ],
     "eol-last": ["error", "always"]

@@ -7,6 +7,12 @@ import HomePage from './pages/HomePage';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { AuthProvider } from './contexts/AuthContext';
 import { AppProvider } from './contexts/AppContext';
+import UsersPage from './pages/admin/UsersPage';
+import AdminRoutes from './components/AdminRoutes';
+import NavBar from './components/NavBar';
+import EditUserPage from './pages/admin/EditUserPage';
+import { NotificationProvider } from './contexts/NotificationContext';
+import { Flowbite } from 'flowbite-react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,19 +24,35 @@ const queryClient = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <HashRouter>
-        <AuthProvider>
-          <AppProvider>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<LoginPage />} />
+    <Flowbite>
+      {/* <DarkThemeToggle /> */}
+      <QueryClientProvider client={queryClient}>
+        <HashRouter>
+          <AuthProvider>
+            <NotificationProvider>
+              <AppProvider>
+                <Routes>
+                  <Route path="/login" element={<LoginPage />} />
 
-              <Route path="*" element={<Navigate to="/login" />} />
-            </Routes>
-          </AppProvider>
-        </AuthProvider>
-      </HashRouter>
-    </QueryClientProvider>
+                  {/* Routes with navbar */}
+                  <Route element={<NavBar />}>
+                    <Route path="/" element={<HomePage />} />
+
+                    {/* Admin only routes */}
+                    <Route element={<AdminRoutes />}>
+                      <Route path="/users" element={<UsersPage />} />
+                      <Route path="/users/:id" element={<EditUserPage />} />
+                    </Route>
+                  </Route>
+
+                  {/* Unknown routes redirect to login */}
+                  <Route path="*" element={<Navigate to="/login" />} />
+                </Routes>
+              </AppProvider>
+            </NotificationProvider>
+          </AuthProvider>
+        </HashRouter>
+      </QueryClientProvider>
+    </Flowbite>
   </React.StrictMode>
 );

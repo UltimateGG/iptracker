@@ -52,10 +52,20 @@ export const login = async (username: string, password: string): Promise<void> =
   setToken(res.data.token);
 };
 
+export const getAllUsers = async (): Promise<User[]> => {
+  const res = await axios('/users');
+
+  return res.data as User[];
+};
+
 export const getUser = async (id: number): Promise<User> => {
   const res = await axios('/users/' + id);
 
   return res.data as User;
+};
+
+export const deleteUser = async (id: number): Promise<void> => {
+  await axios.delete('/users/' + id);
 };
 
 export const getMyApps = async (): Promise<Application[]> => {

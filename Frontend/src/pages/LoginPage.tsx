@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router';
-import { Button, Card, Label, TextInput } from 'flowbite-react';
+import { Button, Card, Label, TextInput, Toast } from 'flowbite-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { login } from '../utils/api';
 import { useQuery } from 'react-query';
 import { APIError } from '../utils/types';
+import { ExclamationCircle } from 'flowbite-react-icons/outline';
 import IndeterminateProgressBar from '../components/IndeterminateProgressBar';
 
 const LoginPage = () => {
@@ -37,13 +38,20 @@ const LoginPage = () => {
       <div className="w-full h-full flex flex-col gap-8 justify-center items-center px-6">
         <img src="commerce-logo.png" className="w-full max-w-md h-auto" />
 
+        {error && (
+          <Toast>
+            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
+              <ExclamationCircle className="h-5 w-5" />
+            </div>
+            <div className="ml-3 text-sm font-normal">{error.message}</div>
+          </Toast>
+        )}
+
         <Card className="w-full max-w-md bg-gray-100" theme={{ root: { children: 'flex h-full flex-col justify-center' } }}>
           <div className="flex h-full flex-col justify-center gap-4 w-full p-6">
             <div className="format">
-              <h1>Login</h1>
+              <h1 className="dark:text-white">Login</h1>
             </div>
-
-            {error && <p className="mb-2 text-red-500">Error: {error.message}</p>}
 
             <div>
               <Label htmlFor="username" value="Your username" className="mb-2 block" />
