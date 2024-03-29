@@ -1,9 +1,12 @@
+import { Spinner } from 'flowbite-react';
 import NavBar from '../components/NavBar';
+import { useAppContext } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { UserRole } from '../utils/types';
 
 const HomePage = () => {
   const { user } = useAuth();
+  const { applications } = useAppContext();
 
   return (
     <div className="w-full h-full">
@@ -18,11 +21,15 @@ const HomePage = () => {
             <p>Your role is: {UserRole[user.role]}</p>
 
             <p>Your Applications</p>
-            <ul>
-              {user.apps.map(a => (
-                <li key={a.id}>{a.description}</li>
-              ))}
-            </ul>
+            {!applications ? (
+              <Spinner />
+            ) : (
+              <ul>
+                {applications.map(app => (
+                  <li key={app.id}>{app.description}</li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
       </div>

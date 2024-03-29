@@ -15,18 +15,18 @@ public class UserApps extends Auditable<String> {
 	@Column(name = "user_apps_uid")
 	private int id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_uid", nullable = false)
 	private User user;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "app_info_uid", nullable = false)
-	private ApplicationInfo applicationInfo;
+	private Application application;
 
 
-	public UserApps(User user, ApplicationInfo applicationInfo) {
+	public UserApps(User user, Application application) {
 		this.user = user;
-		this.applicationInfo = applicationInfo;
+		this.application = application;
 	}
 
 	protected UserApps() { }

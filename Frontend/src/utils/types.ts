@@ -32,7 +32,6 @@ export interface User extends Auditable {
   username: string;
   password: string;
   role: UserRole;
-  apps: Application[];
 }
 
 export interface APIError {

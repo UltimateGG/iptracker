@@ -12,7 +12,7 @@ import lombok.ToString;
 @ToString
 @Getter
 @Setter
-public class ServerInfo extends Auditable<String> {
+public class Server extends Auditable<String> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@Column(name = "server_info_uid")

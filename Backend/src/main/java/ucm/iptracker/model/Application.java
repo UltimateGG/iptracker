@@ -13,7 +13,7 @@ import java.util.Set;
 @Table(name = "application_info")
 @ToString
 @Getter
-public class ApplicationInfo extends Auditable<String> {
+public class Application extends Auditable<String> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@Column(name = "app_info_uid")
@@ -25,7 +25,7 @@ public class ApplicationInfo extends Auditable<String> {
 
 	@OneToMany(mappedBy = "appInfoId", fetch = FetchType.EAGER)
 	@NonNull
-	private Set<ServerInfo> servers = new HashSet<>();
+	private Set<Server> servers = new HashSet<>();
 
 
 	public void setDescription(@NonNull String description) {

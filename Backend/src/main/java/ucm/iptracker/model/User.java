@@ -12,9 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 @Entity
@@ -38,13 +36,6 @@ public class User extends Auditable<String> implements UserDetails {
 	@Enumerated(EnumType.ORDINAL)
 	private Role role;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(
-			name = "user_apps",
-			joinColumns = @JoinColumn(name = "user_uid"),
-			inverseJoinColumns = @JoinColumn(name = "app_info_uid")
-	)
-	private Set<ApplicationInfo> apps = new HashSet<>();
 
 	public void setUsername(@NonNull String username) {
 		if (username.length() < 3 || username.length() > 32)
