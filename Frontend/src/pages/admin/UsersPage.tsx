@@ -2,11 +2,11 @@ import { useQuery } from 'react-query';
 import { getAllUsers } from '../../utils/api';
 import { APIError, User, UserRole } from '../../utils/types';
 import { Button, Spinner, Table, Toast } from 'flowbite-react';
-import { UserEdit, UserAdd } from 'flowbite-react-icons/solid';
-import { ExclamationCircle } from 'flowbite-react-icons/outline';
 import { useMemo, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import EditUserModal from './EditUserModal';
+import { HiExclamationCircle, HiUserAdd } from 'react-icons/hi';
+import { FaUserEdit } from 'react-icons/fa';
 
 const UsersPage = () => {
   const [editingUser, setEditingUser] = useState<User | undefined>(undefined);
@@ -33,14 +33,14 @@ const UsersPage = () => {
         {error && (
           <Toast className="mb-4">
             <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
-              <ExclamationCircle className="h-5 w-5" />
+              <HiExclamationCircle className="h-5 w-5" />
             </div>
             <div className="ml-3 text-sm font-normal">{error?.message}</div>
           </Toast>
         )}
 
         <Button className="mb-4 ml-auto h-min" size="sm" onClick={() => setCreatingUser(true)}>
-          <UserAdd className="mr-1" />
+          <HiUserAdd className="mr-1" size={20} />
           New User
         </Button>
       </div>
@@ -65,7 +65,7 @@ const UsersPage = () => {
                   <Table.Cell>{UserRole[u.role]}</Table.Cell>
                   <Table.Cell>
                     <p className="flex items-center gap-1 text-cyan cursor-pointer w-min ml-auto" onClick={() => setEditingUser(u)}>
-                      <UserEdit />
+                      <FaUserEdit size={16} />
                       Edit
                     </p>
                   </Table.Cell>

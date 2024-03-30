@@ -1,10 +1,10 @@
 import { Modal, Spinner, Button } from 'flowbite-react';
-import { ExclamationCircle } from 'flowbite-react-icons/outline';
 import clsx from 'clsx';
 import { APIError, User } from '../../utils/types';
 import { useMutation } from 'react-query';
 import { deleteUser } from '../../utils/api';
 import { useNotifications } from '../../contexts/NotificationContext';
+import { HiOutlineExclamationCircle } from 'react-icons/hi';
 
 interface DeleteUserModalProps {
   user?: User;
@@ -41,7 +41,7 @@ const DeleteUserModal = ({ user, open, onClose: _onClose }: DeleteUserModalProps
             {isLoading ? (
               <Spinner className="w-full flex items-center" color="failure" size="xl" />
             ) : (
-              <ExclamationCircle className={clsx('h-14 w-14', error ? 'text-red-500' : 'text-gray-400 dark:text-gray-200')} />
+              <HiOutlineExclamationCircle className={clsx('h-14 w-14', error ? 'text-red-500' : 'text-gray-400 dark:text-gray-200')} />
             )}
           </div>
           <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">

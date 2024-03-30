@@ -2,13 +2,12 @@ package ucm.iptracker.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ucm.iptracker.APIException;
 import ucm.iptracker.model.Application;
 import ucm.iptracker.model.User;
-import ucm.iptracker.model.UserApps;
-import ucm.iptracker.repository.UserAppsRepo;
 import ucm.iptracker.repository.UserRepo;
 import ucm.iptracker.service.UserService;
 
@@ -19,14 +18,12 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 	private final UserRepo userRepo;
-	private final UserAppsRepo userAppsRepo;
 	private final UserService userService;
 
 
 	@Autowired
-	public UserController(UserRepo userRepo, UserAppsRepo userAppsRepo, UserService userService) {
+	public UserController(UserRepo userRepo, UserService userService) {
 		this.userRepo = userRepo;
-		this.userAppsRepo = userAppsRepo;
 		this.userService = userService;
 	}
 
@@ -64,9 +61,8 @@ public class UserController {
 	@GetMapping("/{id}/apps")
 	public List<Application> getUsersApps(Authentication auth, @PathVariable int id) {
 		User user = (User) auth.getPrincipal();
-
 		if (user.getId() == id || user.getRole() == User.Role.ADMIN)
-			return userAppsRepo.findAllByUser_Id(id).stream().map(UserApps::getApplication).toList();
+			return userService.getAllowedApplications(id);
 
 		throw new APIException(HttpStatus.FORBIDDEN, "You are not allowed to view this user's apps");
 	}
@@ -106,6 +102,16 @@ public class UserController {
 		return userRepo.save(userToUpdate);
 	}
 
+	@PutMapping("/{id}/apps")
+	public ResponseEntity<String> updateUserApps(Authentication auth, @PathVariable int id, @RequestBody List<Integer> appIds) {
+		User user = (User) auth.getPrincipal();
+		if (user.getRole() != User.Role.ADMIN)
+			throw new APIException(HttpStatus.FORBIDDEN, "You are not allowed to update user apps");
+
+		userService.setUserApplications(id, appIds);
+		return ResponseEntity.status(HttpStatus.CREATED).body("User apps updated successfully");
+	}
+
 	@DeleteMapping("/{id}")
 	public void deleteUser(Authentication auth, @PathVariable int id) {
 		User user = (User) auth.getPrincipal();
@@ -117,7 +123,6 @@ public class UserController {
 		if (user.getId() == id)
 			throw new APIException(HttpStatus.FORBIDDEN, "You cannot delete yourself");
 
-		User userToDelete = userRepo.findById(id).orElseThrow(() -> new APIException(HttpStatus.NOT_FOUND, "User not found"));
-		userRepo.delete(userToDelete);
+		userService.deleteUser(id);
 	}
 }

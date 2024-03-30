@@ -2,7 +2,7 @@ import * as React from 'react';
 import clsx from 'clsx';
 import { createPortal } from 'react-dom';
 import { Toast } from 'flowbite-react';
-import { CheckCircle, ExclamationCircle, InfoCircle } from 'flowbite-react-icons/outline';
+import { HiCheckCircle, HiExclamation, HiExclamationCircle, HiInformationCircle } from 'react-icons/hi';
 
 export interface NotificationProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'color'> {
   /** If the notification is visible (Controls animation)
@@ -66,23 +66,13 @@ const Notification = ({ shown = false, color = 'info', showIcon = true, position
   const getIcon = () => {
     switch (color) {
       case 'info':
-        return <InfoCircle color={getTextClass()} />;
+        return <HiInformationCircle color={getTextClass()} />;
       case 'success':
-        return <CheckCircle color={getTextClass()} />;
+        return <HiCheckCircle color={getTextClass()} />;
       case 'warning':
-        return (
-          <div className={getTextClass()}>
-            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 20 20" aria-hidden="true" height="24px" width="24px" xmlns="http://www.w3.org/2000/svg">
-              <path
-                fillRule="evenodd"
-                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                clipRule="evenodd"
-              ></path>
-            </svg>
-          </div>
-        );
+        return <HiExclamation className={getTextClass()} />;
       case 'danger':
-        return <ExclamationCircle color={getTextClass()} />;
+        return <HiExclamationCircle color={getTextClass()} />;
     }
   };
 

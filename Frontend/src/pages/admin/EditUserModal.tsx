@@ -1,15 +1,16 @@
-import { APIError, User, UserRole } from '../../utils/types';
-import { Button, Checkbox, Label, Modal, TextInput } from 'flowbite-react';
-import { useEffect, useState } from 'react';
-import { TrashBin } from 'flowbite-react-icons/outline';
+import { APIError, Application, User, UserRole } from '../../utils/types';
+import { Button, Checkbox, Label, Modal, Spinner, TextInput } from 'flowbite-react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDebounce } from '../../utils/useDebounce';
 import { dateToString } from '../../utils/utils';
 import DeleteUserModal from './DeleteUserModal';
-import { createUser, updateUser, usernameAvailable } from '../../utils/api';
-import { useMutation } from 'react-query';
+import { createUser, getUsersApps, setUsersApps, updateUser, usernameAvailable } from '../../utils/api';
+import { useMutation, useQuery } from 'react-query';
 import { useNotifications } from '../../contexts/NotificationContext';
 import clsx from 'clsx';
+import { HiOutlineTrash, HiSearch } from 'react-icons/hi';
+import { useAppContext } from '../../contexts/AppContext';
 
 interface EditUserModalProps {
   user?: User;
@@ -20,16 +21,44 @@ interface EditUserModalProps {
 const EditUserModal = ({ user, creating, onClose }: EditUserModalProps) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [newUser, setNewUser] = useState<Partial<User>>({});
+  const [userApplications, setUserApplications] = useState<Application[]>([]);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
 
   const { user: loggedInUser } = useAuth();
   const { notifySuccess, notifyError } = useNotifications();
+  const { applications } = useAppContext();
+
+  const sortedApplications = useMemo(() => {
+    if (!applications) return [];
+    if (!search) return applications.sort((a, b) => a.description.localeCompare(b.description)).sort(a => (userApplications.some(app => app.id === a.id) ? -1 : 1));
+
+    return applications.filter(app => app.description.toLowerCase().includes(search.toLowerCase()));
+  }, [userApplications, applications, search]);
+
+  // Load what applications this user has
+  const { isLoading: loadingUserApps, data: origUserApps } = useQuery<Application[], APIError>(
+    ['user-apps', user?.id],
+    async () => {
+      if (!user) return [];
+      return await getUsersApps(user.id);
+    },
+    {
+      enabled: !!user,
+      onSuccess: data => setUserApplications(data),
+      onError: err => {
+        notifyError('Failed to load user applications: ' + err.message, 10);
+      }
+    }
+  );
 
   useEffect(() => {
     setNewUser(user || {});
     setUsernameError(null);
     setPasswordError(null);
+    setUserApplications([]);
+    setSearch('');
   }, [user, creating]);
 
   const validateUsername = async (submitting: boolean = false) => {
@@ -65,10 +94,27 @@ const EditUserModal = ({ user, creating, onClose }: EditUserModalProps) => {
     async () => {
       if (usernameError || passwordError || !validateUsername(true) || !validatePassword(true)) throw new Error('Invalid input');
 
-      if (creating) return await createUser({ ...newUser, role: newUser.role || UserRole.USER });
+      const userAppsChanged =
+        origUserApps
+          ?.map(a => a.id)
+          .sort()
+          .join() !==
+        userApplications
+          .map(a => a.id)
+          .sort()
+          .join();
+      let userId = user?.id;
 
-      if (!user) return;
-      await updateUser(user.id, newUser);
+      if (creating) {
+        const res = await createUser({ ...newUser, role: newUser.role || UserRole.USER });
+        userId = res.id;
+      } else if (user) await updateUser(user.id, newUser);
+
+      if (userAppsChanged && userId !== undefined)
+        await setUsersApps(
+          userId,
+          userApplications.map(a => a.id)
+        );
     },
     {
       onSuccess: () => {
@@ -76,10 +122,15 @@ const EditUserModal = ({ user, creating, onClose }: EditUserModalProps) => {
         onClose(true);
       },
       onError: err => {
+        if (err.message === 'Invalid input') return; // Handled by validation form
         notifyError('Failed to save user: ' + err.message, 10);
       }
     }
   );
+
+  const onChangeAppAccess = (e: React.ChangeEvent<HTMLInputElement>, app: Application) => {
+    setUserApplications(u => (e.target.checked ? [...u, app] : u.filter(a => a.id !== app.id)));
+  };
 
   return (
     <>
@@ -125,13 +176,45 @@ const EditUserModal = ({ user, creating, onClose }: EditUserModalProps) => {
               <Checkbox
                 id="admin"
                 checked={newUser.role === UserRole.ADMIN}
-                onChange={e => setNewUser(u => ({ ...u, role: e.target.checked ? UserRole.ADMIN : UserRole.USER }))}
+                onChange={e => {
+                  setNewUser(u => ({ ...u, role: e.target.checked ? UserRole.ADMIN : UserRole.USER }));
+                  if (!e.target.checked) setUserApplications([]); // Clear apps if not admin to prevent UI desync
+                }}
                 disabled={isLoading}
               />
               <Label htmlFor="admin" className="flex">
                 Admin
               </Label>
             </div>
+
+            <Label className="mt-2">Assigned Applications</Label>
+            {loadingUserApps || !sortedApplications ? (
+              <Spinner />
+            ) : newUser.role === UserRole.ADMIN ? (
+              <p className="text-gray-500">Admins have access to view all applications</p>
+            ) : (
+              <div className="border border-gray-300 rounded-lg p-2">
+                <TextInput icon={HiSearch} placeholder="Search applications..." value={search} onChange={e => setSearch(e.target.value)} className="mb-2" />
+
+                <div className="flex flex-col gap-1 max-h-[150px] overflow-y-auto">
+                  {!sortedApplications.length ? (
+                    <p className="text-gray-500">No applications found</p>
+                  ) : (
+                    sortedApplications.map(app => (
+                      <div key={app.id} className="flex items-center gap-2 mx-1">
+                        <Checkbox id={'app-' + app.id} checked={userApplications.some(u => u.id === app.id)} onChange={e => onChangeAppAccess(e, app)} />
+                        <Label htmlFor={'app-' + app.id} className="text-md">
+                          {app.description}{' '}
+                          <small className="text-gray-500">
+                            {app.servers.length} server{app.servers.length === 1 ? '' : 's'}
+                          </small>
+                        </Label>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className={clsx('flex mt-2 justify-between gap-2 dark:text-white', creating && 'hidden')}>
               <div>
@@ -155,20 +238,20 @@ const EditUserModal = ({ user, creating, onClose }: EditUserModalProps) => {
             </div>
           </div>
 
-          <div className="w-full flex justify-between mt-6">
+          <div className="w-full flex justify-between mt-6 flex-col xs:flex-row">
             <Button
               color="failure"
-              className={creating ? 'invisible' : undefined}
+              className={clsx('mb-4 xs:mb-0', creating && 'invisible')}
               onClick={() => setDeleteModalOpen(true)}
               size="sm"
               disabled={user?.id === loggedInUser?.id || isLoading}
               title={user?.id === loggedInUser?.id ? 'You cannot delete yourself' : undefined}
             >
-              <TrashBin />
+              <HiOutlineTrash className="mr-2" size={20} />
               Delete user
             </Button>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 ml-auto">
               <Button color="light" onClick={() => onClose(false)} size="sm" disabled={isLoading}>
                 Cancel
               </Button>
