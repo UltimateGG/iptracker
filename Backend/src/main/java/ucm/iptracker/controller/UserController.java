@@ -10,6 +10,7 @@ import ucm.iptracker.model.User;
 import ucm.iptracker.model.UserApps;
 import ucm.iptracker.repository.UserAppsRepo;
 import ucm.iptracker.repository.UserRepo;
+import ucm.iptracker.service.UserService;
 
 import java.util.List;
 
@@ -19,12 +20,14 @@ import java.util.List;
 public class UserController {
 	private final UserRepo userRepo;
 	private final UserAppsRepo userAppsRepo;
+	private final UserService userService;
 
 
 	@Autowired
-	public UserController(UserRepo userRepo, UserAppsRepo userAppsRepo) {
+	public UserController(UserRepo userRepo, UserAppsRepo userAppsRepo, UserService userService) {
 		this.userRepo = userRepo;
 		this.userAppsRepo = userAppsRepo;
+		this.userService = userService;
 	}
 
 	@GetMapping
@@ -36,6 +39,15 @@ public class UserController {
 			throw new APIException(HttpStatus.FORBIDDEN, "You are not allowed to view all users");
 
 		return userRepo.findAll();
+	}
+
+	@GetMapping("/username-available")
+	public boolean usernameAvailable(Authentication auth, @RequestParam String username) {
+		User user = (User) auth.getPrincipal();
+		if (user.getRole() != User.Role.ADMIN)
+			throw new APIException(HttpStatus.FORBIDDEN, "You are not allowed to access this resource");
+
+		return userService.usernameAvailable(username);
 	}
 
 	@GetMapping("/{id}")
@@ -57,6 +69,41 @@ public class UserController {
 			return userAppsRepo.findAllByUser_Id(id).stream().map(UserApps::getApplication).toList();
 
 		throw new APIException(HttpStatus.FORBIDDEN, "You are not allowed to view this user's apps");
+	}
+
+	@PostMapping
+	public User createUser(Authentication auth, @RequestBody User user) {
+		User currentUser = (User) auth.getPrincipal();
+
+		// Only admins can create users
+		if (currentUser.getRole() != User.Role.ADMIN)
+			throw new APIException(HttpStatus.FORBIDDEN, "You are not allowed to create users");
+
+		if (!userService.usernameAvailable(user.getUsername()))
+			throw new APIException(HttpStatus.BAD_REQUEST, "Username is already taken");
+
+		return userRepo.save(user);
+	}
+
+	@PutMapping("/{id}")
+	public User updateUser(Authentication auth, @PathVariable int id, @RequestBody User user) {
+		User currentUser = (User) auth.getPrincipal();
+
+		// Only admins can update users
+		if (currentUser.getRole() != User.Role.ADMIN)
+			throw new APIException(HttpStatus.FORBIDDEN, "You are not allowed to update users");
+
+		User userToUpdate = userRepo.findById(id).orElseThrow(() -> new APIException(HttpStatus.NOT_FOUND, "User not found"));
+
+		// If the username is being changed, check if it is available
+		if (!userToUpdate.getUsername().equals(user.getUsername()) && !userService.usernameAvailable(user.getUsername()))
+			throw new APIException(HttpStatus.BAD_REQUEST, "Username is already taken");
+
+		userToUpdate.setUsername(user.getUsername());
+		userToUpdate.setRole(user.getRole());
+		if (user.getPassword() != null) userToUpdate.setPassword(user.getPassword());
+
+		return userRepo.save(userToUpdate);
 	}
 
 	@DeleteMapping("/{id}")

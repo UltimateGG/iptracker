@@ -30,7 +30,7 @@ export enum UserRole {
 export interface User extends Auditable {
   id: number;
   username: string;
-  // password: string;
+  password?: string;
   role: UserRole;
 }
 

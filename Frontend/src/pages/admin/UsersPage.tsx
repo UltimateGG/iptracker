@@ -6,14 +6,13 @@ import { UserEdit, UserAdd } from 'flowbite-react-icons/solid';
 import { ExclamationCircle } from 'flowbite-react-icons/outline';
 import { useMemo, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNotifications } from '../../contexts/NotificationContext';
 import EditUserModal from './EditUserModal';
 
 const UsersPage = () => {
   const [editingUser, setEditingUser] = useState<User | undefined>(undefined);
+  const [creatingUser, setCreatingUser] = useState<boolean>(false);
 
-  const { isLoading, error, data: users, refetch } = useQuery<User[], APIError>('users', getAllUsers);
-  const { notifySuccess } = useNotifications();
+  const { isLoading, error, data: users, refetch, isRefetching } = useQuery<User[], APIError>('users', getAllUsers);
   const { user } = useAuth();
 
   const sortedUsers = useMemo(() => {
@@ -40,13 +39,13 @@ const UsersPage = () => {
           </Toast>
         )}
 
-        <Button className="mb-4 ml-auto h-min" size="sm" onClick={() => notifySuccess('test message of success!')}>
+        <Button className="mb-4 ml-auto h-min" size="sm" onClick={() => setCreatingUser(true)}>
           <UserAdd className="mr-1" />
           New User
         </Button>
       </div>
 
-      {isLoading ? (
+      {isLoading || isRefetching ? (
         <Spinner className="w-full flex items-center" size="lg" />
       ) : (
         <div className="overflow-x-auto pb-16">
@@ -79,9 +78,12 @@ const UsersPage = () => {
 
       <EditUserModal
         user={editingUser}
-        onClose={() => {
+        creating={creatingUser}
+        onClose={refresh => {
           setEditingUser(undefined);
-          refetch();
+          setCreatingUser(false);
+
+          if (refresh) refetch();
         }}
       />
     </div>
