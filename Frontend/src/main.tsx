@@ -10,7 +10,6 @@ import { AppProvider } from './contexts/AppContext';
 import UsersPage from './pages/admin/UsersPage';
 import AdminRoutes from './components/AdminRoutes';
 import NavBar from './components/NavBar';
-import EditUserPage from './pages/admin/EditUserPage';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { Flowbite } from 'flowbite-react';
 
@@ -41,7 +40,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                     {/* Admin only routes */}
                     <Route element={<AdminRoutes />}>
                       <Route path="/users" element={<UsersPage />} />
-                      <Route path="/users/:id" element={<EditUserPage />} />
                     </Route>
                   </Route>
 
