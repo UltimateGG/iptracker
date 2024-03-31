@@ -39,3 +39,20 @@ export interface APIError {
   status: number;
   message: string;
 }
+
+export enum SortDirection {
+  ASC,
+  DESC
+}
+
+export enum SortType {
+  APPLICATION_ID = 'Application ID',
+  CREATED_AT = 'Date Created',
+  MODIFIED_AT = 'Last Modified',
+  SERVER_COUNT = 'Server Count'
+}
+
+export interface SortState {
+  direction: SortDirection;
+  type: SortType;
+}

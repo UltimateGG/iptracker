@@ -28,8 +28,8 @@ const UsersPage = () => {
   }, [users, user]);
 
   return (
-    <div className="p-4">
-      <div className="flex items-center justify-between">
+    <div className="p-4 md:mx-48">
+      <div className="flex items-center justify-between px-1">
         <Button className="mb-4 ml-auto h-min" size="sm" onClick={() => setCreatingUser(true)}>
           <HiUserAdd className="mr-1" size={20} />
           New User
@@ -39,7 +39,7 @@ const UsersPage = () => {
       {loadingUsers ? (
         <Spinner className="w-full flex items-center" size="lg" />
       ) : (
-        <div className="overflow-x-auto pb-16">
+        <div className="overflow-x-auto pb-16 px-1 pt-1">
           <Table>
             <Table.Head>
               <Table.HeadCell>Username</Table.HeadCell>

@@ -193,7 +193,7 @@ const EditUserModal = ({ user, creating, onClose }: EditUserModalProps) => {
             ) : newUser.role === UserRole.ADMIN ? (
               <p className="text-gray-500">Admins have access to view all applications</p>
             ) : (
-              <div className="border border-gray-300 rounded-lg p-2">
+              <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-2">
                 <TextInput icon={HiSearch} placeholder="Search applications..." value={search} onChange={e => setSearch(e.target.value)} className="mb-2" disabled={isLoading} />
 
                 <div className="flex flex-col gap-1 max-h-[150px] overflow-y-auto">
