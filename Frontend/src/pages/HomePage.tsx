@@ -21,6 +21,7 @@ const HomePage = () => {
   const sortedApplications = useMemo(() => {
     if (!applications) return null;
 
+    // TODO search by server hostname, ip address, any others useful
     const filtered = applications.filter(app => app.description.toLowerCase().includes(search.toLowerCase()));
     let sorted: Application[] = [];
 

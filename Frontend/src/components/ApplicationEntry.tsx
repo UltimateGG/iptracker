@@ -12,7 +12,7 @@ const ApplicationEntry = ({ app }: ApplicationEntryProps) => {
   return (
     <div className="flex flex-col border border-gray-200 dark:border-gray-700 rounded-lg p-2 shadow-wide border-l-8 border-l-cyan dark:border-l-cyan max-w-sm">
       <div className="flex items-center gap-2">
-        <FaRegWindowMaximize size={24} />
+        {/* <FaRegWindowMaximize size={24} /> */}
         <p className="text-lg font-medium">{app.description}</p>
       </div>
       {!expanded && (
