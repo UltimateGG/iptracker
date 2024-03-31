@@ -14,5 +14,7 @@ public interface UserAppsRepo extends JpaRepository<UserAppLink, Integer> {
 	UserAppLink findByUserIdAndApplicationId(int userId, int applicationId);
 
 	void deleteAllByUserId(int userId);
+
+	void deleteAllByApplicationId(int applicationId);
 }
 

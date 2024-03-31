@@ -32,5 +32,10 @@ public class ErrorHandler {
 		private final boolean error = true;
 		private final int status;
 		private final String message;
+
+		public JsonError(int status, String message) {
+			this.status = status;
+			this.message = message.replace("JSON parse error: ", "");
+		}
 	}
 }

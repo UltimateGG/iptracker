@@ -13,7 +13,7 @@ import NavBar from './components/NavBar';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { CustomFlowbiteTheme, Flowbite } from 'flowbite-react';
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false

@@ -135,7 +135,7 @@ const EditUserModal = ({ user, creating, onClose }: EditUserModalProps) => {
   return (
     <>
       <Modal show={!!user || creating} onClose={isLoading ? undefined : () => onClose(false)}>
-        <Modal.Header>{creating ? 'Create' : 'Edit'} User</Modal.Header>
+        <Modal.Header className="flex items-center">{creating ? 'Create' : 'Edit'} User</Modal.Header>
 
         <Modal.Body>
           <div className="flex flex-col gap-2">
@@ -194,7 +194,7 @@ const EditUserModal = ({ user, creating, onClose }: EditUserModalProps) => {
               <p className="text-gray-500">Admins have access to view all applications</p>
             ) : (
               <div className="border border-gray-300 rounded-lg p-2">
-                <TextInput icon={HiSearch} placeholder="Search applications..." value={search} onChange={e => setSearch(e.target.value)} className="mb-2" />
+                <TextInput icon={HiSearch} placeholder="Search applications..." value={search} onChange={e => setSearch(e.target.value)} className="mb-2" disabled={isLoading} />
 
                 <div className="flex flex-col gap-1 max-h-[150px] overflow-y-auto">
                   {!sortedApplications.length ? (
@@ -202,7 +202,7 @@ const EditUserModal = ({ user, creating, onClose }: EditUserModalProps) => {
                   ) : (
                     sortedApplications.map(app => (
                       <div key={app.id} className="flex items-center gap-2 mx-1">
-                        <Checkbox id={'app-' + app.id} checked={userApplications.some(u => u.id === app.id)} onChange={e => onChangeAppAccess(e, app)} />
+                        <Checkbox id={'app-' + app.id} checked={userApplications.some(u => u.id === app.id)} onChange={e => onChangeAppAccess(e, app)} disabled={isLoading} />
                         <Label htmlFor={'app-' + app.id} className="text-md">
                           {app.description}{' '}
                           <small className="text-gray-500">

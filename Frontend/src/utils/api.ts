@@ -103,3 +103,13 @@ export const getUsersApps = async (userId: number): Promise<Application[]> => {
 export const setUsersApps = async (userId: number, appIds: number[]): Promise<void> => {
   await axios.put(`/users/${userId}/apps`, appIds);
 };
+
+export const createApplication = async (description: string, allowedUsers: number[]): Promise<Application> => {
+  const res = await axios.post('/apps', { description, allowedUsers });
+
+  return res.data as Application;
+};
+
+export const deleteApplication = async (id: number): Promise<void> => {
+  await axios.delete('/apps/' + id);
+};

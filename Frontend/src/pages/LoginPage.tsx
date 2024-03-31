@@ -7,6 +7,7 @@ import { useQuery } from 'react-query';
 import { APIError } from '../utils/types';
 import IndeterminateProgressBar from '../components/IndeterminateProgressBar';
 import { HiExclamationCircle } from 'react-icons/hi';
+import { queryClient } from '../main';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -16,6 +17,7 @@ const LoginPage = () => {
     'login',
     async () => {
       await login(username, password);
+      await queryClient.invalidateQueries();
       window.location.reload();
     },
     { cacheTime: 0, enabled: false, retry: false }

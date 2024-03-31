@@ -43,7 +43,7 @@ public class UserService implements UserDetailsService {
 	}
 
 	@Transactional
-	private void addUserToApplication(int userId, int applicationId) {
+	public void addUserToApplication(int userId, int applicationId) {
 		User user = userRepo.findById(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User not found"));
 
@@ -59,7 +59,7 @@ public class UserService implements UserDetailsService {
 	}
 
 	@Transactional
-	private void removeUserFromApplication(int userId, int applicationId) {
+	public void removeUserFromApplication(int userId, int applicationId) {
 		UserAppLink linkedApp = userAppsRepo.findByUserIdAndApplicationId(userId, applicationId);
 		if (linkedApp == null)
 			throw new IllegalStateException("User does not have access to this application");

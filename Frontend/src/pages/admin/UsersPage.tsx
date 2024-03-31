@@ -1,19 +1,19 @@
-import { useQuery } from 'react-query';
-import { getAllUsers } from '../../utils/api';
-import { APIError, User, UserRole } from '../../utils/types';
-import { Button, Spinner, Table, Toast } from 'flowbite-react';
+import { User, UserRole } from '../../utils/types';
+import { Button, Spinner, Table } from 'flowbite-react';
 import { useMemo, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import EditUserModal from './EditUserModal';
-import { HiExclamationCircle, HiUserAdd } from 'react-icons/hi';
+import { HiUserAdd } from 'react-icons/hi';
 import { FaUserEdit } from 'react-icons/fa';
+import { useAppContext } from '../../contexts/AppContext';
+import { queryClient } from '../../main';
 
 const UsersPage = () => {
   const [editingUser, setEditingUser] = useState<User | undefined>(undefined);
   const [creatingUser, setCreatingUser] = useState<boolean>(false);
 
-  const { isLoading, error, data: users, refetch, isRefetching } = useQuery<User[], APIError>('users', getAllUsers);
   const { user } = useAuth();
+  const { users, loadingUsers } = useAppContext();
 
   const sortedUsers = useMemo(() => {
     if (!users) return [];
@@ -30,22 +30,13 @@ const UsersPage = () => {
   return (
     <div className="p-4">
       <div className="flex items-center justify-between">
-        {error && (
-          <Toast className="mb-4">
-            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
-              <HiExclamationCircle className="h-5 w-5" />
-            </div>
-            <div className="ml-3 text-sm font-normal">{error?.message}</div>
-          </Toast>
-        )}
-
         <Button className="mb-4 ml-auto h-min" size="sm" onClick={() => setCreatingUser(true)}>
           <HiUserAdd className="mr-1" size={20} />
           New User
         </Button>
       </div>
 
-      {isLoading || isRefetching ? (
+      {loadingUsers ? (
         <Spinner className="w-full flex items-center" size="lg" />
       ) : (
         <div className="overflow-x-auto pb-16">
@@ -80,10 +71,13 @@ const UsersPage = () => {
         user={editingUser}
         creating={creatingUser}
         onClose={refresh => {
+          if (refresh) {
+            if (editingUser?.id === user?.id) queryClient.refetchQueries('user');
+            queryClient.refetchQueries('users');
+          }
+
           setEditingUser(undefined);
           setCreatingUser(false);
-
-          if (refresh) refetch();
         }}
       />
     </div>
