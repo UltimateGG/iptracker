@@ -1,22 +1,19 @@
-import { useMutation, useQuery } from 'react-query';
-import { getAllUsers, deleteUser as apiDeleteUser } from '../../utils/api';
-import { APIError, User, UserRole } from '../../utils/types';
-import { Button, Dropdown, Modal, Spinner, Table, Toast } from 'flowbite-react';
-import { UserEdit, UserAdd } from 'flowbite-react-icons/solid';
-import { DotsVertical, TrashBin, ExclamationCircle } from 'flowbite-react-icons/outline';
+import { User, UserRole } from '../../utils/types';
+import { Button, Spinner, Table } from 'flowbite-react';
 import { useMemo, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import clsx from 'clsx';
-import { useNotifications } from '../../contexts/NotificationContext';
-import { useNavigate } from 'react-router-dom';
+import EditUserModal from './EditUserModal';
+import { HiUserAdd } from 'react-icons/hi';
+import { FaUserEdit } from 'react-icons/fa';
+import { useAppContext } from '../../contexts/AppContext';
+import { queryClient } from '../../main';
 
 const UsersPage = () => {
-  const [deleteModal, setDeleteModal] = useState<User | null>(null);
+  const [editingUser, setEditingUser] = useState<User | undefined>(undefined);
+  const [creatingUser, setCreatingUser] = useState<boolean>(false);
 
-  const { isLoading, error, data: users, refetch } = useQuery<User[], APIError>('users', getAllUsers);
-  const { notifySuccess } = useNotifications();
   const { user } = useAuth();
-  const nav = useNavigate();
+  const { users, loadingUsers } = useAppContext();
 
   const sortedUsers = useMemo(() => {
     if (!users) return [];
@@ -30,48 +27,19 @@ const UsersPage = () => {
     });
   }, [users, user]);
 
-  const deleteUser = async () => {
-    if (!deleteModal) return;
-
-    await apiDeleteUser(deleteModal.id);
-  };
-
-  const deleteUserMutation = useMutation<void, APIError>({
-    mutationFn: deleteUser,
-    onSuccess: async () => {
-      await refetch().catch(() => null);
-      setDeleteModal(null);
-      notifySuccess('User deleted successfully!');
-    }
-  });
-
-  const closeDeleteModal = () => {
-    setDeleteModal(null);
-    deleteUserMutation.reset();
-  };
-
   return (
-    <div className="p-4">
-      <div className="flex items-center justify-between">
-        {error && (
-          <Toast className="mb-4">
-            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
-              <ExclamationCircle className="h-5 w-5" />
-            </div>
-            <div className="ml-3 text-sm font-normal">{error?.message}</div>
-          </Toast>
-        )}
-
-        <Button className="mb-4 ml-auto h-min" size="sm" onClick={() => notifySuccess('test message of success!')}>
-          <UserAdd className="mr-1" />
+    <div className="p-4 md:mx-48">
+      <div className="flex items-center justify-between px-1">
+        <Button className="mb-4 ml-auto h-min" size="sm" onClick={() => setCreatingUser(true)}>
+          <HiUserAdd className="mr-1" size={20} />
           New User
         </Button>
       </div>
 
-      {isLoading ? (
+      {loadingUsers ? (
         <Spinner className="w-full flex items-center" size="lg" />
       ) : (
-        <div className="overflow-x-auto pb-16">
+        <div className="overflow-x-auto pb-16 px-1 pt-1">
           <Table>
             <Table.Head>
               <Table.HeadCell>Username</Table.HeadCell>
@@ -87,18 +55,10 @@ const UsersPage = () => {
                   <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">{u.username}</Table.Cell>
                   <Table.Cell>{UserRole[u.role]}</Table.Cell>
                   <Table.Cell>
-                    <Dropdown label="" renderTrigger={() => <DotsVertical className="text-gray-500 cursor-pointer ml-auto" />}>
-                      <Dropdown.Item icon={UserEdit} onClick={() => nav('/users/' + u.id)}>
-                        Edit
-                      </Dropdown.Item>
-                      <Dropdown.Item
-                        className={clsx('text-red-500', u.id === user?.id && 'opacity-50 cursor-not-allowed')}
-                        icon={TrashBin}
-                        onClick={() => (u.id === user?.id ? null : setDeleteModal(u))}
-                      >
-                        Delete
-                      </Dropdown.Item>
-                    </Dropdown>
+                    <p className="flex items-center gap-1 text-cyan cursor-pointer w-min ml-auto" onClick={() => setEditingUser(u)}>
+                      <FaUserEdit size={16} />
+                      Edit
+                    </p>
                   </Table.Cell>
                 </Table.Row>
               ))}
@@ -107,42 +67,19 @@ const UsersPage = () => {
         </div>
       )}
 
-      <Modal show={!!deleteModal} size="md" onClose={closeDeleteModal} popup dismissible={!deleteUserMutation.isLoading}>
-        <Modal.Header className={clsx(deleteUserMutation.isLoading && 'invisible')} />
-        <Modal.Body>
-          <div className="text-center">
-            <div className="mx-auto mb-4 h-14 w-14">
-              {deleteUserMutation.isLoading ? (
-                <Spinner className="w-full flex items-center" color="failure" size="xl" />
-              ) : (
-                <ExclamationCircle className={clsx('h-14 w-14', deleteUserMutation.error ? 'text-red-500' : 'text-gray-400 dark:text-gray-200')} />
-              )}
-            </div>
-            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-              {deleteUserMutation.isLoading ? (
-                'Deleting user...'
-              ) : deleteUserMutation.error ? (
-                <>Failed to delete user: {deleteUserMutation.error.message}</>
-              ) : (
-                <>
-                  Are you sure you want to delete the user &quot;<strong>{deleteModal?.username}</strong>&quot;?
-                </>
-              )}
-            </h3>
+      <EditUserModal
+        user={editingUser}
+        creating={creatingUser}
+        onClose={refresh => {
+          if (refresh) {
+            if (editingUser?.id === user?.id) queryClient.refetchQueries('user');
+            queryClient.refetchQueries('users');
+          }
 
-            {!deleteUserMutation.isLoading && (
-              <div className="flex justify-center gap-4">
-                <Button color="failure" onClick={() => deleteUserMutation.mutate()}>
-                  {deleteUserMutation.error ? 'Retry' : 'Yes, delete'}
-                </Button>
-                <Button color="gray" onClick={closeDeleteModal}>
-                  {deleteUserMutation.error ? 'Cancel' : 'No, cancel'}
-                </Button>
-              </div>
-            )}
-          </div>
-        </Modal.Body>
-      </Modal>
+          setEditingUser(undefined);
+          setCreatingUser(false);
+        }}
+      />
     </div>
   );
 };

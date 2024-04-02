@@ -2,6 +2,7 @@ package ucm.iptracker.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -28,7 +29,7 @@ public class User extends Auditable<String> implements UserDetails {
 	@Column(name = "user_id", nullable = false)
 	private String username;
 
-	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@Column(name = "user_password", nullable = false)
 	private String password;
 
@@ -45,8 +46,8 @@ public class User extends Auditable<String> implements UserDetails {
 	}
 
 	public void setPassword(@NonNull String password) {
-		if (password.length() < 8 || password.length() > 32)
-			throw new IllegalArgumentException("Password must be between 8 and 32 characters long");
+		if (password.length() < 6 || password.length() > 32)
+			throw new IllegalArgumentException("Password must be between 6 and 32 characters long");
 
 		this.password = password;
 	}

@@ -1,10 +1,10 @@
 import { Dropdown } from 'flowbite-react';
 import { useAuth } from '../contexts/AuthContext';
-import { UserCircle, Users } from 'flowbite-react-icons/solid';
-import { ArrowLeftToBracket } from 'flowbite-react-icons/outline';
 import { UserRole } from '../utils/types';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
+import { HiLogout, HiUsers } from 'react-icons/hi';
+import { FaUserCircle } from 'react-icons/fa';
 
 const NavbarLink = ({ to, children }: { to: string; children: React.ReactNode }) => {
   const { pathname } = useLocation();
@@ -31,7 +31,7 @@ const NavBar = () => {
         <NavbarLink to="/">Home</NavbarLink>
 
         <NavbarLink to="/users">
-          <Users /> Manage Users
+          <HiUsers size={20} /> Manage Users
         </NavbarLink>
       </div>
     ) : null;
@@ -46,13 +46,21 @@ const NavBar = () => {
             <div className="hidden sm:block ml-4">{getNavLinks()}</div>
           </div>
 
-          <Dropdown label="" dismissOnClick={false} renderTrigger={() => <UserCircle size={36} className="cursor-pointer hover:text-stone-800 dark:hover:text-stone-300" />}>
+          <Dropdown
+            label=""
+            dismissOnClick={false}
+            renderTrigger={() => (
+              <div>
+                <FaUserCircle size={36} className="cursor-pointer hover:text-stone-800 dark:hover:text-stone-300" />
+              </div>
+            )}
+          >
             <Dropdown.Header>
               <span className="block truncate text-sm">{user?.username}</span>
               <span className="block text-xs text-gray-300">{user?.role !== undefined ? UserRole[user.role] : ''}</span>
             </Dropdown.Header>
 
-            <Dropdown.Item icon={ArrowLeftToBracket} onClick={logout}>
+            <Dropdown.Item icon={HiLogout} onClick={logout}>
               Logout
             </Dropdown.Item>
           </Dropdown>

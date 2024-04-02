@@ -36,17 +36,22 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
     if (!user && location.pathname !== '/login') nav('/login');
   }, [user, location, nav]);
 
-  const loadUser = async () => {
-    try {
-      const token = getToken();
-      if (!token) throw new Error('No token found');
+  const loadUser = async (): Promise<User> => {
+    const token = getToken();
+    if (!token) throw new Error('No token found');
 
-      const data = parseToken(token);
-      const me = await getUser(data.id);
+    const data = parseToken(token);
+    return await getUser(data.id);
+  };
 
-      setUser(me);
-      localStorage.setItem(USER_CACHE_KEY, JSON.stringify(me));
-    } catch (e) {
+  // Use react query to debounce
+  useQuery('user', loadUser, {
+    retry: false,
+    onSuccess: data => {
+      setUser(data);
+      localStorage.setItem(USER_CACHE_KEY, JSON.stringify(data));
+    },
+    onError: e => {
       console.error('Error loading logged in user', e);
 
       setUser(null);
@@ -54,12 +59,7 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
       clearToken();
       nav('/login');
     }
-  };
-
-  setUnauthorizedHook(() => logout());
-
-  // Use react query to debounce
-  useQuery('user', loadUser, { retry: false });
+  });
 
   const logout = () => {
     setUser(null);
@@ -67,6 +67,8 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
     clearToken();
     nav('/login');
   };
+
+  setUnauthorizedHook(() => logout());
 
   const context: AuthContextProps = useMemo(() => ({ user, logout }), [user]);
 

@@ -5,5 +5,6 @@
   "editor.tabSize": 2,
   "git.autofetch": "all",
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "C_Cpp.default.compilerPath": "/usr/bin/clang"
 }

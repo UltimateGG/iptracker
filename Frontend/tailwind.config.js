@@ -19,6 +19,12 @@ module.exports = {
           900: '#002E1F',
           950: '#001F15'
         }
+      },
+      screens: {
+        xs: '430px'
+      },
+      boxShadow: {
+        wide: '0 6px 12px rgba(0, 0, 0, 0.04)'
       }
     }
   },

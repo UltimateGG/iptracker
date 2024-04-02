@@ -5,8 +5,9 @@ import { useEffect, useState } from 'react';
 import { login } from '../utils/api';
 import { useQuery } from 'react-query';
 import { APIError } from '../utils/types';
-import { ExclamationCircle } from 'flowbite-react-icons/outline';
 import IndeterminateProgressBar from '../components/IndeterminateProgressBar';
+import { HiExclamationCircle } from 'react-icons/hi';
+import { queryClient } from '../main';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -16,6 +17,7 @@ const LoginPage = () => {
     'login',
     async () => {
       await login(username, password);
+      await queryClient.invalidateQueries();
       window.location.reload();
     },
     { cacheTime: 0, enabled: false, retry: false }
@@ -41,7 +43,7 @@ const LoginPage = () => {
         {error && (
           <Toast>
             <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
-              <ExclamationCircle className="h-5 w-5" />
+              <HiExclamationCircle className="h-5 w-5" />
             </div>
             <div className="ml-3 text-sm font-normal">{error.message}</div>
           </Toast>

@@ -64,6 +64,26 @@ export const getUser = async (id: number): Promise<User> => {
   return res.data as User;
 };
 
+export const usernameAvailable = async (username: string): Promise<boolean> => {
+  const res = await axios.get('/users/username-available?username=' + username);
+  return res.data;
+};
+
+export const createUser = async (user: Partial<User>): Promise<User> => {
+  const res = await axios.post('/users', user);
+
+  return res.data as User;
+};
+
+export const updateUser = async (id: number, user: Partial<User>): Promise<User> => {
+  const userToSend: any = user; // eslint-disable-line @typescript-eslint/no-explicit-any
+  delete userToSend.authorities;
+
+  const res = await axios.put('/users/' + id, userToSend);
+
+  return res.data as User;
+};
+
 export const deleteUser = async (id: number): Promise<void> => {
   await axios.delete('/users/' + id);
 };
@@ -72,4 +92,24 @@ export const getMyApps = async (): Promise<Application[]> => {
   const res = await axios('/apps');
 
   return res.data as Application[];
+};
+
+export const getUsersApps = async (userId: number): Promise<Application[]> => {
+  const res = await axios(`/users/${userId}/apps`);
+
+  return res.data as Application[];
+};
+
+export const setUsersApps = async (userId: number, appIds: number[]): Promise<void> => {
+  await axios.put(`/users/${userId}/apps`, appIds);
+};
+
+export const createApplication = async (description: string, allowedUsers: number[]): Promise<Application> => {
+  const res = await axios.post('/apps', { description, allowedUsers });
+
+  return res.data as Application;
+};
+
+export const deleteApplication = async (id: number): Promise<void> => {
+  await axios.delete('/apps/' + id);
 };

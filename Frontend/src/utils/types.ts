@@ -1,5 +1,5 @@
 export interface Auditable {
-  createdAt: string; // TODO: Not sure what format of date this is
+  createdAt: string;
   createdBy: string; // Username
   modifiedAt: string;
   modifiedBy: string; // Username
@@ -30,7 +30,7 @@ export enum UserRole {
 export interface User extends Auditable {
   id: number;
   username: string;
-  password: string;
+  password?: string;
   role: UserRole;
 }
 
@@ -38,4 +38,21 @@ export interface APIError {
   error: boolean;
   status: number;
   message: string;
+}
+
+export enum SortDirection {
+  ASC,
+  DESC
+}
+
+export enum SortType {
+  APPLICATION_ID = 'Application ID',
+  CREATED_AT = 'Date Created',
+  MODIFIED_AT = 'Last Modified',
+  SERVER_COUNT = 'Server Count'
+}
+
+export interface SortState {
+  direction: SortDirection;
+  type: SortType;
 }
