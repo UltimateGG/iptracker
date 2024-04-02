@@ -1,9 +1,7 @@
 import { useAppContext } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
-import React from 'react';
-import { Server } from '../utils/types';
 import { Button, Dropdown, Spinner, TextInput } from 'flowbite-react';
-import { Application, SortDirection, SortState, SortType, UserRole } from '../utils/types';
+import { Application, Server, SortDirection, SortState, SortType, UserRole } from '../utils/types';
 import { HiChevronDown, HiPlus, HiSearch, HiServer } from 'react-icons/hi';
 import CreateApplicationModal from './admin/CreateApplicationModal';
 import { useMemo, useState } from 'react';
@@ -132,66 +130,12 @@ const HomePage = () => {
           {!sortedApplications ? (
             <Spinner />
           ) : (
-            <table>
-              <thead>
-                <tr>
-                  <th style={headerStyle}>ID</th>
-                  <th style={headerStyle}>Description</th>
-                  <th style={headerStyle}>Servers</th>
-                </tr>
-              </thead>
-              <tbody>
-                {applications.map((app, index) => (
-                  <React.Fragment key={app.id}>
-                    <tr
-                      style={{ backgroundColor: rowColors[index % rowColors.length] }}
-                      onClick={() => setExpandedRow(expandedRow === app.id ? null : app.id)}
-                    >
-                      <td>{app.id}</td>
-                      <td>{app.description}</td>
-                      <td>{app.servers.length}</td>
-                    </tr>
-                    {expandedRow === app.id && (
-                      <tr>
-                        <td colSpan={3}>
-                          {/* Nested table for server information */}
-                          <table>
-                            <thead>
-                              <tr>
-                                <th style={headerStyle}>Source IP Address</th>
-                                <th style={headerStyle}>Source Hostname</th>
-                                <th style={headerStyle}>Destination Hostname</th>
-                                <th style={headerStyle}>Destination IP Address</th>
-                                <th style={headerStyle}>Destination Port</th>
-                                <th style={headerStyle}>Is Enabled</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {sortServersById(app.servers).map((server) => (
-                                <tr key={server.id}>
-                                  <td>{server.sourceIpAddress}</td>
-                                  <td>{server.sourceHostname}</td>
-                                  <td>{server.destinationHostname}</td>
-                                  <td>{server.destinationIpAddress}</td>
-                                  <td>{server.destinationPort}</td>
-                                  <td>{server.isEnabled ? 'Yes' : 'No'}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
             // TODO scroll container
-            // <div className="flex flex-col gap-4 overflow-y-auto">
-            //   {sortedApplications.map(app => (
-            //     <ApplicationEntry key={app.id} app={app} />
-            //   ))}
-            // </div>
+            <div className="flex flex-col gap-4">
+              {sortedApplications.map(app => (
+                <ApplicationEntry key={app.id} app={app} />
+              ))}
+            </div>
           )}
         </>
       )}
