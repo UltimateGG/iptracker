@@ -1,7 +1,7 @@
 import { useAppContext } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Button, Dropdown, Spinner, TextInput } from 'flowbite-react';
-import { Application, Server, SortDirection, SortState, SortType, UserRole } from '../utils/types';
+import { Application, SortDirection, SortState, SortType, UserRole } from '../utils/types';
 import { HiChevronDown, HiPlus, HiSearch, HiServer } from 'react-icons/hi';
 import CreateApplicationModal from './admin/CreateApplicationModal';
 import { useMemo, useState } from 'react';
@@ -16,20 +16,6 @@ const HomePage = () => {
 
   const { user } = useAuth();
   const { applications } = useAppContext();
-
-  const rowColors = ['#f0f0f0', '#e0e0e0'];
-  const headerStyle = {
-    backgroundColor: '#00824d',
-    color: 'white'
-  };
-
-  // State to manage which row is expanded
-  const [expandedRow, setExpandedRow] = useState(null);
-
-  // Function to sort servers by ID
-  const sortServersById = (servers: Array<Server>) => {
-    return servers.slice().sort((a, b) => a.id - b.id);
-  };
 
   const serverCount = useMemo(() => applications?.reduce((acc, app) => acc + app.servers.length, 0), [applications]);
   const sortedApplications = useMemo(() => {
