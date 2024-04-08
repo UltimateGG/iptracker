@@ -1,6 +1,9 @@
+import { Button, Table } from 'flowbite-react';
 import { Application } from '../utils/types';
 import { useState } from 'react';
 import { FaRegWindowMaximize } from 'react-icons/fa';
+import { HiArrowRight, HiChevronDown, HiChevronUp } from 'react-icons/hi';
+import clsx from 'clsx';
 
 interface ApplicationEntryProps {
   app: Application;
@@ -14,56 +17,61 @@ const ApplicationEntry = ({ app }: ApplicationEntryProps) => {
   };
 
   return (
-    <div className="flex flex-col border border-gray-200 dark:border-gray-700 rounded-lg p-2 shadow-wide border-l-8 border-l-cyan dark:border-l-cyan" onClick={toggleExpanded}>
-      <div className="flex items-center gap-2">
-        <FaRegWindowMaximize size={24} />
-        <p className="text-lg font-medium">{app.description}</p>
-      </div>
-      {expanded && (
-        <div>
-          <table>
-            <thead>
-              <tr>
-                <th>Source IP</th>
-                <th>Source Hostname</th>
-                <th>Destination IP</th>
-                <th>Destination Hostname</th>
-                <th>Destination Port</th>
-                <th>Enabled</th>
-              </tr>
-            </thead>
-            <tbody>
-              {app.servers.map((server, index) => (
-                <tr key={index}>
-                  <td className="text-sm text-gray-500 dark:text-gray-400">{server.sourceIpAddress}</td>
-                  <td className="text-sm text-gray-500 dark:text-gray-400">{server.sourceHostname}</td>
-                  <td className="text-sm text-gray-500 dark:text-gray-400">{server.destinationIpAddress}</td>
-                  <td className="text-sm text-gray-500 dark:text-gray-400">{server.destinationHostname}</td>
-                  <td className="text-sm text-gray-500 dark:text-gray-400">{server.destinationPort}</td>
-                  <td className="text-sm text-gray-500 dark:text-gray-400">{server.isEnabled}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div
+      className={clsx('flex flex-col border border-gray-200 dark:border-gray-700 rounded-lg shadow-wide border-l-8 border-l-cyan dark:border-l-cyan', !expanded && 'cursor-pointer')}
+      onClick={expanded ? undefined : toggleExpanded}
+    >
+      <div className={clsx('flex justify-between items-center gap-2 p-2 cursor-pointer', expanded ? 'border-b bg-gray-50' : 'pb-0')} onClick={toggleExpanded}>
+        <div className="flex items-center gap-2">
+          <FaRegWindowMaximize size={24} />
+          <p className="text-lg font-medium">{app.description}</p>
         </div>
-        // <div>
-        //   {app.servers.map((server, index) => (
-        //     <>
-        //       <p key={index} className="text-sm text-gray-500 dark:text-gray-400">{server.sourceIpAddress}</p>
-        //       <p key={index} className="text-sm text-gray-500 dark:text-gray-400">{server.sourceHostname}</p>
-        //       <p key={index} className="text-sm text-gray-500 dark:text-gray-400">{server.destinationIpAddress}</p>
-        //       <p key={index} className="text-sm text-gray-500 dark:text-gray-400">{server.destinationHostname}</p>
-        //       <p key={index} className="text-sm text-gray-500 dark:text-gray-400">{server.destinationPort}</p>
-        //       <p key={index} className="text-sm text-gray-500 dark:text-gray-400">{server.isEnabled}</p>
-        //     </>
-        //   ))}
-        // </div>
-      )}
-      {!expanded && (
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {app.servers.length} server{app.servers.length !== 1 ? 's' : ''}
-        </p>
-      )}
+
+        {expanded ? <HiChevronUp size={20} /> : <HiChevronDown size={20} />}
+      </div>
+
+      <div className="p-1">
+        {expanded ? (
+          <div className="flex flex-col w-full">
+            <h3 className="text-lg font-medium my-2 ml-1">Servers</h3>
+
+            <div className="overflow-x-auto pb-2 px-1">
+              <Table>
+                <Table.Head>
+                  <Table.HeadCell>Src IP</Table.HeadCell>
+                  <Table.HeadCell>Src Hostname</Table.HeadCell>
+                  <Table.HeadCell>Dest IP</Table.HeadCell>
+                  <Table.HeadCell>Dest Hostname</Table.HeadCell>
+                  <Table.HeadCell>Dest Port</Table.HeadCell>
+                  <Table.HeadCell>Enabled</Table.HeadCell>
+                </Table.Head>
+
+                <Table.Body className="divide-y">
+                  {app.servers.map(server => (
+                    <Table.Row key={server.id} className={clsx('bg-white dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-100 transition-colors duration-100')}>
+                      <Table.Cell>{server.sourceIpAddress}</Table.Cell>
+                      <Table.Cell>{server.sourceHostname}</Table.Cell>
+                      <Table.Cell>{server.destinationIpAddress}</Table.Cell>
+                      <Table.Cell>{server.destinationHostname}</Table.Cell>
+                      <Table.Cell>{server.destinationPort}</Table.Cell>
+                      <Table.Cell>{server.enabled ? 'Yes' : 'No'}</Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table>
+            </div>
+
+            <Button className="w-min h-min mt-4 m-2 ml-auto">
+              Edit
+              <HiArrowRight className="ml-2" size={16} />
+            </Button>
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {app.servers.length} server{app.servers.length !== 1 ? 's' : ''}
+          </p>
+        )}
+      </div>
     </div>
   );
 };

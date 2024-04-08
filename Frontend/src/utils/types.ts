@@ -19,7 +19,7 @@ export interface Server extends Auditable {
   destinationHostname: string;
   destinationIpAddress: string;
   destinationPort: number;
-  isEnabled: boolean;
+  enabled: boolean;
 }
 
 export enum UserRole {
