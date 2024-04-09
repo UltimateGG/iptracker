@@ -1,17 +1,17 @@
-import { useAppContext } from '../contexts/AppContext';
-import { useAuth } from '../contexts/AuthContext';
-import { Button, Dropdown, Spinner, TextInput } from 'flowbite-react';
-import { Application, SortDirection, SortState, SortType, UserRole } from '../utils/types';
-import { HiChevronDown, HiPlus, HiSearch, HiServer } from 'react-icons/hi';
-import CreateApplicationModal from './admin/CreateApplicationModal';
-import { useMemo, useState } from 'react';
-import ApplicationEntry from '../components/ApplicationEntry';
-import { FaRegWindowMaximize, FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
-import clsx from 'clsx';
+import { useAppContext } from "../contexts/AppContext";
+import { useAuth } from "../contexts/AuthContext";
+import { Button, Dropdown, Spinner, TextInput } from "flowbite-react";
+import { Application, SortDirection, SortState, SortType, UserRole } from "../utils/types";
+import { HiChevronDown, HiPlus, HiSearch, HiServer } from "react-icons/hi";
+import CreateApplicationModal from "./admin/CreateApplicationModal";
+import { useMemo, useState } from "react";
+import ApplicationEntry from "../components/ApplicationEntry";
+import { FaRegWindowMaximize, FaSortAmountDown, FaSortAmountUp } from "react-icons/fa";
+import clsx from "clsx";
 
 const HomePage = () => {
   const [createApplicationModalOpen, setCreateApplicationModalOpen] = useState(false);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortState>({ direction: SortDirection.DESC, type: SortType.APPLICATION_ID });
 
   const { user } = useAuth();
@@ -21,8 +21,18 @@ const HomePage = () => {
   const sortedApplications = useMemo(() => {
     if (!applications) return null;
 
-    // TODO search by server hostname, ip address, any others useful
-    const filtered = applications.filter(app => app.description.toLowerCase().includes(search.toLowerCase()));
+    function filterApplications(app: Application) {
+      return app.description.toLowerCase().includes(search.toLowerCase()) || 
+      app.servers.filter((server) => server.sourceIpAddress.includes(search)).length != 0 || 
+      app.servers.filter((server) => server.sourceHostname.toLowerCase().includes(search.toLowerCase())).length != 0 || 
+      app.servers.filter((server) => server.destinationIpAddress.includes(search)).length != 0 || 
+      app.servers.filter((server) => server.destinationHostname.toLowerCase().includes(search.toLowerCase())).length != 0 || 
+      app.servers.filter((server) => server.destinationPort.toString().includes(search)).length != 0 || 
+      app.servers.filter((server) => server.enabled && search.toLowerCase().includes("yes")).length != 0 || 
+      app.servers.filter((server) => !server.enabled && search.toLowerCase().includes("no")).length != 0;
+    }
+
+    const filtered = applications.filter(filterApplications);
     let sorted: Application[] = [];
 
     switch (sort.type) {
@@ -64,7 +74,7 @@ const HomePage = () => {
                 <p className="text-3xl font-bold">{applications?.length}</p>
                 <p className="flex gap-2 items-center text-md mt-1">
                   <FaRegWindowMaximize size={24} />
-                  Application{applications?.length !== 1 ? 's' : ''}
+                  Application{applications?.length !== 1 ? "s" : ""}
                 </p>
               </div>
 
@@ -72,7 +82,7 @@ const HomePage = () => {
                 <p className="text-3xl font-bold">{serverCount}</p>
                 <p className="flex gap-2 items-center text-md mt-1">
                   <HiServer size={24} />
-                  Server{serverCount !== 1 ? 's' : ''}
+                  Server{serverCount !== 1 ? "s" : ""}
                 </p>
               </div>
             </div>
@@ -80,17 +90,12 @@ const HomePage = () => {
             <div className="mb-4" />
           )}
 
-          <h3 className="text-xl font-medium mb-2">{user.role === UserRole.ADMIN ? 'All' : 'Your'} Applications</h3>
+          <h3 className="text-xl font-medium mb-2">{user.role === UserRole.ADMIN ? "All" : "Your"} Applications</h3>
           <div className="flex gap-4 flex-col sm:flex-row">
-            <TextInput placeholder="Search applications, server hostname, ip address..." icon={HiSearch} className="w-full sm:mb-6" value={search} onChange={e => setSearch(e.target.value)} />
+            <TextInput placeholder="Search applications, server hostname, ip address..." icon={HiSearch} className="w-full sm:mb-6" value={search} onChange={(e) => setSearch(e.target.value)} />
 
             <div className="flex mb-6">
-              <Button
-                color="light"
-                className="h-[42px] rounded-r-none"
-                title={sort.direction === SortDirection.ASC ? 'Ascending' : 'Descending'}
-                onClick={() => setSort(s => ({ ...s, direction: sort.direction === SortDirection.ASC ? SortDirection.DESC : SortDirection.ASC }))}
-              >
+              <Button color="light" className="h-[42px] rounded-r-none" title={sort.direction === SortDirection.ASC ? "Ascending" : "Descending"} onClick={() => setSort((s) => ({ ...s, direction: sort.direction === SortDirection.ASC ? SortDirection.DESC : SortDirection.ASC }))}>
                 {sort.direction === SortDirection.ASC ? <FaSortAmountUp size={20} /> : <FaSortAmountDown size={20} />}
               </Button>
 
@@ -105,8 +110,8 @@ const HomePage = () => {
                   </div>
                 )}
               >
-                {Object.values(SortType).map(v => (
-                  <Dropdown.Item key={v} onClick={() => setSort(s => ({ ...s, type: v }))} className={clsx(sort.type === v && 'bg-gray-200 dark:bg-gray-500')}>
+                {Object.values(SortType).map((v) => (
+                  <Dropdown.Item key={v} onClick={() => setSort((s) => ({ ...s, type: v }))} className={clsx(sort.type === v && "bg-gray-200 dark:bg-gray-500")}>
                     {v}
                   </Dropdown.Item>
                 ))}
@@ -118,7 +123,7 @@ const HomePage = () => {
           ) : (
             // TODO scroll container
             <div className="flex flex-col gap-4">
-              {sortedApplications.map(app => (
+              {sortedApplications.map((app) => (
                 <ApplicationEntry key={app.id} app={app} />
               ))}
             </div>
