@@ -3,6 +3,7 @@ import { Application } from '../utils/types';
 import { useState } from 'react';
 import { FaRegWindowMaximize } from 'react-icons/fa';
 import { HiArrowRight, HiChevronDown, HiChevronUp } from 'react-icons/hi';
+import ExportApplication from './ExportApplication';
 import clsx from 'clsx';
 
 interface ApplicationEntryProps {
@@ -33,7 +34,12 @@ const ApplicationEntry = ({ app }: ApplicationEntryProps) => {
       <div className="p-1">
         {expanded ? (
           <div className="flex flex-col w-full">
-            <h3 className="text-lg font-medium my-2 ml-1">Servers</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-medium my-2 ml-1">
+                Servers
+              </h3>
+              <ExportApplication app={app} />
+            </div>
 
             <div className="overflow-x-auto pb-2 px-1">
               <Table>
