@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { APIError, Application, User } from './types';
+import { APIError, Application, Server, User } from './types';
 
 axios.defaults.baseURL = '/api'; // Vite proxy directs to backend so we dont have to mess with CORS
 
@@ -112,4 +112,16 @@ export const createApplication = async (description: string, allowedUsers: numbe
 
 export const deleteApplication = async (id: number): Promise<void> => {
   await axios.delete('/apps/' + id);
+};
+
+export const createServer = async (server: Partial<Server>): Promise<Server> => {
+  const res = await axios.post('/servers', server);
+
+  return res.data as Server;
+};
+
+export const updateServer = async (id: number, server: Partial<Server>): Promise<Server> => {
+  const res = await axios.put('/servers/' + id, server);
+
+  return res.data as Server;
 };

@@ -5,6 +5,7 @@ import { FaRegWindowMaximize } from 'react-icons/fa';
 import { HiArrowRight, HiChevronDown, HiChevronUp } from 'react-icons/hi';
 import ExportApplication from './ExportApplication';
 import clsx from 'clsx';
+import { useNavigate } from 'react-router-dom';
 
 interface ApplicationEntryProps {
   app: Application;
@@ -16,6 +17,8 @@ const ApplicationEntry = ({ app }: ApplicationEntryProps) => {
   const toggleExpanded = () => {
     setExpanded(!expanded);
   };
+
+  const nav = useNavigate();
 
   return (
     <div
@@ -67,7 +70,7 @@ const ApplicationEntry = ({ app }: ApplicationEntryProps) => {
               </Table>
             </div>
 
-            <Button className="w-min h-min mt-4 m-2 ml-auto">
+            <Button onClick={() => nav('/application/' + app.id)} className="w-min h-min mt-4 m-2 ml-auto">
               Edit
               <HiArrowRight className="ml-2" size={16} />
             </Button>

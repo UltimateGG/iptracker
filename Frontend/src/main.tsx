@@ -12,6 +12,7 @@ import AdminRoutes from './components/AdminRoutes';
 import NavBar from './components/NavBar';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { CustomFlowbiteTheme, Flowbite } from 'flowbite-react';
+import ApplicationPage from './pages/ApplicationPage';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -58,6 +59,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                     <Route element={<AdminRoutes />}>
                       <Route path="/users" element={<UsersPage />} />
                     </Route>
+                    <Route path="/application/:id" element={<ApplicationPage />} />
                   </Route>
 
                   {/* Unknown routes redirect to login */}
