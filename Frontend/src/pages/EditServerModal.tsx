@@ -7,6 +7,7 @@ import { useMutation } from 'react-query';
 import { useNotifications } from '../contexts/NotificationContext';
 import clsx from 'clsx';
 import { HiOutlineTrash } from 'react-icons/hi';
+import DeleteServerModal from './DeleteServerModal';
 
 interface EditServerModalProps {
   server?: Server;
@@ -17,12 +18,12 @@ interface EditServerModalProps {
 
 const EditServerModal = ({ server, creating, onClose, appId }: EditServerModalProps) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [newServer, setNewServer] = useState<Partial<Server>>({});
+  const [newServer, setNewServer] = useState<Partial<Server>>({ enabled: true });
 
   const { notifySuccess, notifyError } = useNotifications();
 
   useEffect(() => {
-    setNewServer(server || {});
+    setNewServer(server || { enabled: true });
   }, [server, creating]);
 
   const { mutate: save, isLoading } = useMutation<unknown, APIError>(
@@ -172,14 +173,14 @@ const EditServerModal = ({ server, creating, onClose, appId }: EditServerModalPr
         </Modal.Body>
       </Modal>
 
-      {/* <DeleteUserModal
-        user={user}
+      <DeleteServerModal
+        server={server}
         open={deleteModalOpen}
         onClose={deleted => {
           setDeleteModalOpen(false);
           if (deleted) onClose(true);
         }}
-      /> */}
+      />
     </>
   );
 };

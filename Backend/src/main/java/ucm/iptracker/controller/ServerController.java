@@ -27,6 +27,16 @@ public class ServerController {
         if (currentUser.getRole() != User.Role.USER)
             throw new APIException(HttpStatus.FORBIDDEN, "You are not allowed to create servers");
 
+        if (server.getSourceIpAddress() == null || server.getSourceIpAddress().length() < 5 || server.getSourceIpAddress().length() > 15)
+            throw new APIException(HttpStatus.BAD_REQUEST, "Invalid source IP address");
+        if (server.getDestinationIpAddress() == null|| server.getDestinationIpAddress().length() < 5 || server.getDestinationIpAddress().length() > 15)
+            throw new APIException(HttpStatus.BAD_REQUEST, "Invalid destination IP address");
+        if (server.getDestinationPort() < 0 || server.getDestinationPort() > 65535)
+            throw new APIException(HttpStatus.BAD_REQUEST, "Invalid destination port");
+        if (server.getSourceHostname() == null || server.getSourceHostname().length() == 0 || server.getSourceHostname().length() > 255)
+            throw new APIException(HttpStatus.BAD_REQUEST, "Invalid source hostname");
+        if (server.getDestinationHostname() == null || server.getDestinationHostname().length() == 0 || server.getDestinationHostname().length() > 255)
+            throw new APIException(HttpStatus.BAD_REQUEST, "Invalid destination hostname");
 
         return serverRepo.save(server);
     }
@@ -42,5 +52,18 @@ public class ServerController {
         Server serverToUpdate = serverRepo.findById(id).orElseThrow(() -> new APIException(HttpStatus.NOT_FOUND, "Server not found"));
 
         return serverRepo.save(server);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteServer(Authentication auth, @PathVariable int id) {
+        User currentUser = (User) auth.getPrincipal();
+
+        // Only users can delete servers
+        if (currentUser.getRole() != User.Role.USER)
+            throw new APIException(HttpStatus.FORBIDDEN, "You are not allowed to delete servers");
+
+        Server server = serverRepo.findById(id).orElseThrow(() -> new APIException(HttpStatus.NOT_FOUND, "Server not found"));
+
+        serverRepo.delete(server);
     }
 }

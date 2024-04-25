@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ucm.iptracker.APIException;
 import ucm.iptracker.model.Application;
 import ucm.iptracker.model.User;
+import ucm.iptracker.repository.ApplicationRepo;
 import ucm.iptracker.service.ApplicationService;
 import ucm.iptracker.service.UserService;
 
@@ -18,11 +19,13 @@ import java.util.List;
 public class ApplicationController {
 	private final UserService userService;
 	private final ApplicationService appService;
+	private final ApplicationRepo appRepo;
 
 	@Autowired
-	public ApplicationController(UserService userService, ApplicationService appService) {
+	public ApplicationController(UserService userService, ApplicationService appService, ApplicationRepo appRepo) {
 		this.userService = userService;
 		this.appService = appService;
+		this.appRepo = appRepo;
 	}
 
 	@GetMapping
@@ -39,6 +42,18 @@ public class ApplicationController {
 			throw new APIException(HttpStatus.FORBIDDEN, "You are not allowed to access this resource");
 
 		return appService.createApplication(app.description, app.allowedUsers);
+	}
+
+	@PutMapping("/{id}")
+	public Application updateApp(Authentication auth, @PathVariable int id, @RequestBody Application application) {
+		User user = (User) auth.getPrincipal();
+		if (user.getRole() != User.Role.ADMIN)
+			throw new APIException(HttpStatus.FORBIDDEN, "You are not allowed to access this resource");
+
+		Application current = appRepo.findById(id).orElseThrow(() -> new APIException(HttpStatus.NOT_FOUND, "Application not found"));
+
+		current.setDescription(application.getDescription());
+		return appRepo.save(current);
 	}
 
 	@DeleteMapping("/{id}")

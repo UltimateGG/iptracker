@@ -110,6 +110,12 @@ export const createApplication = async (description: string, allowedUsers: numbe
   return res.data as Application;
 };
 
+export const updateApplication = async (id: number, description: string): Promise<Application> => {
+  const res = await axios.put('/apps/' + id, { description });
+
+  return res.data as Application;
+};
+
 export const deleteApplication = async (id: number): Promise<void> => {
   await axios.delete('/apps/' + id);
 };
@@ -124,4 +130,8 @@ export const updateServer = async (id: number, server: Partial<Server>): Promise
   const res = await axios.put('/servers/' + id, server);
 
   return res.data as Server;
+};
+
+export const deleteServer = async (id: number): Promise<void> => {
+  await axios.delete('/servers/' + id);
 };

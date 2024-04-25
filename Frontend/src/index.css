@@ -37,3 +37,14 @@ body,
     transform: translateX(100%) scaleX(0.5);
   }
 }
+
+.center-x {
+  display: flex;
+  justify-content: center;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

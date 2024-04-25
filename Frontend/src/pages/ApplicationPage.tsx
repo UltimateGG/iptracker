@@ -1,6 +1,6 @@
-import { Server, UserRole } from '../utils/types';
-import { Button, Spinner, Table } from 'flowbite-react';
-import { useMemo, useState } from 'react';
+import { APIError, Server, UserRole } from '../utils/types';
+import { Button, Spinner, Table, TextInput } from 'flowbite-react';
+import { useEffect, useMemo, useState } from 'react';
 import EditServerModal from './EditServerModal';
 import { useAppContext } from '../contexts/AppContext';
 import { queryClient } from '../main';
@@ -8,19 +8,44 @@ import { useNavigate, useParams } from 'react-router-dom';
 import clsx from 'clsx';
 import { FaEdit, FaPlus } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
+import { useMutation } from 'react-query';
+import { updateApplication } from '../utils/api';
+import { useNotifications } from '../contexts/NotificationContext';
 
 const ApplicationPage = () => {
   const [editingServer, setEditingServer] = useState<Server | undefined>(undefined);
   const [creatingServer, setCreatingServer] = useState<boolean>(false);
+  const [editingName, setEditingName] = useState<boolean>(false);
+  const [newName, setNewName] = useState<string>('');
 
   const { user } = useAuth();
   const { applications } = useAppContext();
   const { id } = useParams();
+  const { notifyError } = useNotifications();
   const nav = useNavigate();
 
   const application = useMemo(() => {
     return applications?.filter(a => a.id === Number(id))[0];
   }, [applications, id]);
+
+  useEffect(() => {
+    if (application) setNewName(application.description);
+  }, [application]);
+
+  const updateAppMutation = useMutation<unknown, APIError>({
+    mutationFn: async () => {
+      if (!application) return;
+
+      const res = await updateApplication(application.id, newName);
+      await queryClient.invalidateQueries('applications');
+
+      setNewName(res.description);
+      setEditingName(false);
+    },
+    onError: err => {
+      notifyError(err.message, 10);
+    }
+  });
 
   if (!application && applications)
     return (
@@ -32,20 +57,59 @@ const ApplicationPage = () => {
 
   return (
     <div className="p-4 md:mx-48">
-      {user?.role !== UserRole.ADMIN && (
-        <div className="flex items-center justify-between px-1">
-          <Button className="mb-4 ml-auto h-min" size="sm" onClick={() => setCreatingServer(true)}>
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex items-center gap-2">
+          {editingName ? (
+            <>
+              <TextInput value={newName} onChange={e => setNewName(e.target.value)} className="w-24" disabled={updateAppMutation.isLoading} maxLength={3} />
+
+              <Button
+                size="sm"
+                onClick={() => {
+                  setEditingName(false);
+                  setNewName(application?.description || '');
+                }}
+                color="light"
+                disabled={updateAppMutation.isLoading}
+                outline
+              >
+                Cancel
+              </Button>
+              <Button size="sm" onClick={() => updateAppMutation.mutate()} disabled={updateAppMutation.isLoading} isProcessing={updateAppMutation.isLoading}>
+                Save
+              </Button>
+            </>
+          ) : (
+            <>
+              {user?.role === UserRole.ADMIN && <FaEdit className="mt-2 cursor-pointer" color="gray" size={16} onClick={() => setEditingName(true)} />}
+              <p className="text-2xl font-bold">{application?.description}</p>
+            </>
+          )}
+        </div>
+
+        {user?.role !== UserRole.ADMIN && (
+          <Button className="h-min" size="sm" onClick={() => setCreatingServer(true)}>
             <FaPlus className="mr-1" size={20} />
             New Server
           </Button>
-        </div>
-      )}
+        )}
+      </div>
 
       {!applications || !application ? (
         <Spinner className="w-full flex items-center" size="lg" />
+      ) : !application.servers.length ? (
+        <div className="p-4 center-x">
+          <p className="text-lg">No servers found for this application</p>
+
+          {user?.role !== UserRole.ADMIN && (
+            <Button className="mt-4" onClick={() => setCreatingServer(true)}>
+              <FaPlus className="mr-1" size={20} />
+              New Server
+            </Button>
+          )}
+        </div>
       ) : (
         <div className="overflow-x-auto pb-16 px-1 pt-1">
-          <p className="text-xl font-bold mb-4">{application.description}</p>
           <Table>
             <Table.Head>
               <Table.HeadCell>Src IP</Table.HeadCell>
@@ -54,11 +118,12 @@ const ApplicationPage = () => {
               <Table.HeadCell>Dest Hostname</Table.HeadCell>
               <Table.HeadCell>Dest Port</Table.HeadCell>
               <Table.HeadCell>Enabled</Table.HeadCell>
-              <Table.HeadCell>
-                <span className="sr-only">Menu</span>
-              </Table.HeadCell>
+              {user?.role != UserRole.ADMIN && (
+                <Table.HeadCell>
+                  <span className="sr-only">Menu</span>
+                </Table.HeadCell>
+              )}
             </Table.Head>
-
             <Table.Body className="divide-y">
               {application.servers.map(server => (
                 <Table.Row key={server.id} className={clsx('bg-white dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-100 transition-colors duration-100')}>
@@ -89,7 +154,7 @@ const ApplicationPage = () => {
         appId={application?.id || 0}
         onClose={refresh => {
           if (refresh) {
-            queryClient.refetchQueries('applications');
+            queryClient.invalidateQueries('applications');
           }
 
           setEditingServer(undefined);
