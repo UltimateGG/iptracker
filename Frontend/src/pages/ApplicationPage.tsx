@@ -1,4 +1,4 @@
-import { APIError, Server, UserRole } from '../utils/types';
+import { APIError, Server, UserRole} from '../utils/types';
 import { Button, Spinner, Table, TextInput } from 'flowbite-react';
 import { useEffect, useMemo, useState } from 'react';
 import EditServerModal from './EditServerModal';
@@ -11,12 +11,16 @@ import { useAuth } from '../contexts/AuthContext';
 import { useMutation } from 'react-query';
 import { updateApplication } from '../utils/api';
 import { useNotifications } from '../contexts/NotificationContext';
+import "./DeleteApplicationModal"
+import DeleteApplicationModal from './DeleteApplicationModal';
+import { HiOutlineTrash } from 'react-icons/hi';
 
 const ApplicationPage = () => {
   const [editingServer, setEditingServer] = useState<Server | undefined>(undefined);
   const [creatingServer, setCreatingServer] = useState<boolean>(false);
   const [editingName, setEditingName] = useState<boolean>(false);
   const [newName, setNewName] = useState<string>('');
+  const [deleteApplicationModalOpen, setDeleteApplicationModalOpen] = useState(false);
 
   const { user } = useAuth();
   const { applications } = useAppContext();
@@ -35,7 +39,6 @@ const ApplicationPage = () => {
   const updateAppMutation = useMutation<unknown, APIError>({
     mutationFn: async () => {
       if (!application) return;
-
       const res = await updateApplication(application.id, newName);
       await queryClient.invalidateQueries('applications');
 
@@ -100,13 +103,6 @@ const ApplicationPage = () => {
       ) : !application.servers.length ? (
         <div className="p-4 center-x">
           <p className="text-lg">No servers found for this application</p>
-
-          {user?.role !== UserRole.ADMIN && (
-            <Button className="mt-4" onClick={() => setCreatingServer(true)}>
-              <FaPlus className="mr-1" size={20} />
-              New Server
-            </Button>
-          )}
         </div>
       ) : (
         <div className="overflow-x-auto pb-16 px-1 pt-1">
@@ -147,6 +143,27 @@ const ApplicationPage = () => {
           </Table>
         </div>
       )}
+
+      {user?.role == UserRole.ADMIN && (
+        <div className="w-full flex justify-between mt-6 flex-col xs:flex-row">
+          <Button color="failure" onClick={() => setDeleteApplicationModalOpen(true)} size="sm">
+              <HiOutlineTrash className="mr-2" size={20} />
+              Delete Application
+            </Button>
+        </div>
+      )}
+
+      <DeleteApplicationModal
+        application={application}
+        open={deleteApplicationModalOpen}
+        onClose={deleted=>{
+          setDeleteApplicationModalOpen(false);
+          if(deleted) {
+            queryClient.refetchQueries("applications");
+            nav("/");
+          }
+        }}
+      />
 
       <EditServerModal
         server={editingServer}

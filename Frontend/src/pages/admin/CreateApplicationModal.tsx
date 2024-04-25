@@ -62,7 +62,7 @@ const CreateApplicationModal = ({ onClose }: CreateApplicationModalProps) => {
             <Spinner />
           ) : (
             <div className="border border-gray-300 rounded-lg p-2">
-              <TextInput icon={HiSearch} placeholder="Search applications..." value={search} onChange={e => setSearch(e.target.value)} className="mb-2" disabled={isLoading} />
+              <TextInput icon={HiSearch} placeholder="Search users..." value={search} onChange={e => setSearch(e.target.value)} className="mb-2" disabled={isLoading} />
 
               <div className="flex flex-col gap-1 max-h-[150px] overflow-y-auto">
                 {sortedUsers.map(u => (
